@@ -1,5 +1,5 @@
 #include "virtual.h"
-#include "Adafruit_GC9A01A.h"
+#include <TFT_eSPI.h> 
 #include <Adafruit_GFX.h>
 
 #define TFT_MISO 12
@@ -8,7 +8,9 @@
 #define TFT_DC 2  
 #define TFT_RST 4 
 
-Adafruit_GC9A01A display(-1, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST, TFT_MISO);
+// Adafruit_GC9A01A display(-1, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST, TFT_MISO);
+TFT_eSPI display = TFT_eSPI();
+
 
 typedef struct
 {
@@ -59,13 +61,13 @@ void setup()
         Serial.println("Memory Allocation for virtual screen failed");
         return;
     }
-    tft->fillScreen(GC9A01A_BLACK);
+    tft->fillScreen(TFT_BLACK);
     tft->setTextSize(5);
-    tft->setTextColor(GC9A01A_CYAN);
+    tft->setTextColor(TFT_CYAN);
     tft->setCursor(35, 100);
     tft->println("This a test on a large screen");
 
-    tft->drawRect(20, 80, virtualWidth - 60, 70, GC9A01A_GREEN);
+    tft->drawRect(20, 80, virtualWidth - 60, 70, TFT_GREEN);
 
 
     output();
@@ -80,6 +82,7 @@ void initDisplay()
     displayWidth = display.width();
     displayHeight = display.height();
     display.begin();
+    display.setSwapBytes(true);
     for (int i = 0; i < ROWS; ++i)
     {
         for (int j = 0; j < COLUMNS; ++j)
@@ -127,7 +130,7 @@ void output()
             Screen &currentScreen = grid[row][col];
             uint16_t *screenImage = getScreenImage(currentScreen);
             digitalWrite(currentScreen.cs, LOW);
-            display.drawRGBBitmap(0, 0, screenImage, displayWidth, displayHeight);
+            display.pushImage(0, 0,displayWidth, displayHeight,screenImage);
             digitalWrite(currentScreen.cs, HIGH);
 
             delete[] screenImage;
