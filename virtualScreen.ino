@@ -67,14 +67,14 @@ void setup()
         return;
     }
     tft->fillScreen(TFT_BLACK);
-    // tft->setTextSize(5);
-    // tft->setTextColor(TFT_CYAN);
-    // tft->setCursor(35, 100);
-    // tft->println("This a test on a large screen");
+    tft->setTextSize(8);
+    tft->setTextColor(TFT_CYAN);
+    tft->setCursor(35, 100);
+    tft->println("This a test on a large screen, resolution is 720 x 480 pixels!");
 
     // tft->drawRect(20, 80, virtualWidth - 60, virtualHeight-80, TFT_GREEN);
 
-    tft->drawRGBBitmap(0, 0, (uint16_t *)highway, highway_width, highway_height);
+    // tft->drawRGBBitmap(0, 0, (uint16_t *)highway, highway_width, highway_height);
 
     output();
 }
