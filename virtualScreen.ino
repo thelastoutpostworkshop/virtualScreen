@@ -20,6 +20,7 @@ typedef struct
     int row;
     int column;
     int cs;
+    int rotation;
 } Screen;
 
 int virtualWidth = 0;
@@ -30,12 +31,12 @@ int displayHeight = 0;
 #define ROWS 2    // Number of rows
 #define COLUMNS 3 // Number of columns
 Screen grid[ROWS][COLUMNS] = {
-    {{.row = 0, .column = 0, .cs = 16},
-     {.row = 0, .column = 1, .cs = 6},
-     {.row = 0, .column = 2, .cs = 7}},
-    {{.row = 1, .column = 0, .cs = 15},
-     {.row = 1, .column = 1, .cs = 11},
-     {.row = 1, .column = 2, .cs = 9}}};
+    {{.row = 0, .column = 0, .cs = 7, .rotation = 2},
+     {.row = 0, .column = 1, .cs = 6, .rotation = 2},
+     {.row = 0, .column = 2, .cs = 15, .rotation = 2}},
+    {{.row = 1, .column = 0, .cs = 16, .rotation = 0},
+     {.row = 1, .column = 1, .cs = 11, .rotation = 0},
+     {.row = 1, .column = 2, .cs = 9, .rotation = 0}}};
 
 VirtualDisplay *tft;
 
@@ -98,7 +99,7 @@ void initDisplay()
         for (int j = 0; j < COLUMNS; ++j)
         {
             digitalWrite(grid[i][j].cs, LOW);
-            display.setRotation(2);
+            display.setRotation(grid[i][j].rotation);
             digitalWrite(grid[i][j].cs, HIGH);
         }
     }
