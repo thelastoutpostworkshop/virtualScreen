@@ -8,12 +8,20 @@ class VirtualDisplay : public Adafruit_GFX
 private:
     uint16_t *canvas;
     size_t canvasSize;
+    size_t displayBufferSize;
+    uint16_t *displayBuffer;
     int16_t _width;
     int16_t _height;
+    bool _ready = false;
     CallbackFunction callBackFunction;
+    
+    void clearDisplayBuffer()
+    {
+        memset(canvas, 0, displayBufferSize);
+    }
 
 public:
-    VirtualDisplay(int16_t w, int16_t h) : Adafruit_GFX(w, h)
+    VirtualDisplay(int16_t w, int16_t h, int16_t displayWidth, int16_t displayHeight) : Adafruit_GFX(w, h)
     {
         _width = w;
         _height = h;
@@ -22,10 +30,12 @@ public:
         {
             memset(canvas, 0, canvasSize);
         }
-        // if ((canvasBefore = (uint8_t *)malloc(canvasSize)))
-        // {
-        //     memset(canvasBefore, 0, canvasSize);
-        // }
+        displayBufferSize = w * h * pixelSize;
+        if ((displayBuffer = (uint16_t *)malloc(displayBufferSize)))
+        {
+            clearDisplayBuffer();
+        }
+        _ready = true;
     }
 
     ~VirtualDisplay()
@@ -54,14 +64,15 @@ public:
     {
         return canvas;
     }
-    // uint8_t *getCurrentPixelsNotWritten()
-    // {
-    //     return canvasBefore;
-    // }
+
+    uint16_t *getDisplayBuffer()
+    {
+        return displayBuffer;
+    }
 
     bool ready()
     {
-        return canvas != NULL;
+        return _ready;
     }
 
     void drawPixel(int16_t x, int16_t y, uint16_t color) override

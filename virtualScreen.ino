@@ -52,7 +52,7 @@ void setup()
 
     calculateVirtualScreenSize();
 
-    tft = new VirtualDisplay(virtualWidth, virtualHeight);
+    tft = new VirtualDisplay(virtualWidth, virtualHeight,displayWidth,displayHeight);
 
     Serial.printf("PSRAM Left = %lu\n", ESP.getFreePsram());
 
@@ -132,8 +132,6 @@ void output()
             digitalWrite(currentScreen.cs, LOW);
             display.pushImage(0, 0,displayWidth, displayHeight,screenImage);
             digitalWrite(currentScreen.cs, HIGH);
-
-            delete[] screenImage;
         }
     }
 }
@@ -141,7 +139,7 @@ void output()
 uint16_t *getScreenImage(const Screen &screen)
 {
     // Allocate memory for the screen image
-    uint16_t *screenImage = new uint16_t[displayWidth * displayHeight];
+    uint16_t *screenImage = tft->getDisplayBuffer();
 
     // Calculate the starting position of the screen in the buffer
     uint32_t position = (screen.row * displayHeight * virtualWidth) + (screen.column * displayWidth);
