@@ -1,20 +1,18 @@
 #include "virtual.h"
-#include <TFT_eSPI.h> 
+#include <TFT_eSPI.h>
 #include <Adafruit_GFX.h>
 
 #include "images/newyork.h"
 #define test_image newyork
 
-
 #define TFT_MISO 12
 #define TFT_MOSI 13
 #define TFT_SCLK 18
-#define TFT_DC 2  
-#define TFT_RST 4 
+#define TFT_DC 2
+#define TFT_RST 4
 
 // Adafruit_GC9A01A display(-1, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST, TFT_MISO);
 TFT_eSPI display = TFT_eSPI();
-
 
 typedef struct
 {
@@ -28,14 +26,15 @@ int virtualHeight = 0;
 int displayWidth = 0;
 int displayHeight = 0;
 
-#define ROWS 1    // Number of rows
-#define COLUMNS 4 // Number of columns
-
+#define ROWS 2    // Number of rows
+#define COLUMNS 3 // Number of columns
 Screen grid[ROWS][COLUMNS] = {
-    {{.row = 0, .column = 0, 16},
-     {.row = 0, .column = 1, 6},
-     {.row = 0, .column = 2, 7},
-     {.row = 0, .column = 3, 15}}};
+    {{.row = 0, .column = 0, .cs = 16},
+     {.row = 0, .column = 1, .cs = 6},
+     {.row = 0, .column = 2, .cs = 7}},
+    {{.row = 1, .column = 0, .cs = 15},
+     {.row = 1, .column = 1, .cs = 11},
+     {.row = 1, .column = 2, .cs = 9}}};
 
 VirtualDisplay *tft;
 
@@ -56,7 +55,7 @@ void setup()
 
     calculateVirtualScreenSize();
 
-    tft = new VirtualDisplay(virtualWidth, virtualHeight,displayWidth,displayHeight);
+    tft = new VirtualDisplay(virtualWidth, virtualHeight, displayWidth, displayHeight);
 
     Serial.printf("PSRAM Left = %lu\n", ESP.getFreePsram());
 
@@ -65,16 +64,15 @@ void setup()
         Serial.println("Memory Allocation for virtual screen failed");
         return;
     }
-    // tft->fillScreen(TFT_BLACK);
+    tft->fillScreen(TFT_BLACK);
     // tft->setTextSize(5);
     // tft->setTextColor(TFT_CYAN);
     // tft->setCursor(35, 100);
     // tft->println("This a test on a large screen");
 
-    // tft->drawRect(20, 80, virtualWidth - 60, 70, TFT_GREEN);
+    // tft->drawRect(20, 80, virtualWidth - 60, virtualHeight-80, TFT_GREEN);
 
-    tft->drawRGBBitmap(0,0,(uint16_t*)test_image,virtualWidth,virtualHeight);
-
+    tft->drawRGBBitmap(0, 0, (uint16_t *)test_image, virtualWidth, virtualHeight);
 
     output();
 }
@@ -136,7 +134,7 @@ void output()
             Screen &currentScreen = grid[row][col];
             uint16_t *screenImage = getScreenImage(currentScreen);
             digitalWrite(currentScreen.cs, LOW);
-            display.pushImage(0, 0,displayWidth, displayHeight,screenImage);
+            display.pushImage(0, 0, displayWidth, displayHeight, screenImage);
             digitalWrite(currentScreen.cs, HIGH);
         }
     }
