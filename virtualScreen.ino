@@ -65,11 +65,8 @@ void setup()
     tft->setCursor(35, 100);
     tft->println("This a test on a large screen");
 
-    // tft->drawRect(20, 80, virtualWidth - 60, 70, GC9A01A_GREEN);
-    // tft->drawPixel(0,0,GC9A01A_WHITE);
-    // tft->drawPixel(239,0,GC9A01A_WHITE);
-    // tft->drawPixel(240,0,GC9A01A_WHITE);
-    // tft->fillScreen(GC9A01A_RED);
+    tft->drawRect(20, 80, virtualWidth - 60, 70, GC9A01A_GREEN);
+
 
     output();
 }
