@@ -2,6 +2,10 @@
 #include <TFT_eSPI.h> 
 #include <Adafruit_GFX.h>
 
+#include "images/newyork.h"
+#define test_image newyork
+
+
 #define TFT_MISO 12
 #define TFT_MOSI 13
 #define TFT_SCLK 18
@@ -61,13 +65,15 @@ void setup()
         Serial.println("Memory Allocation for virtual screen failed");
         return;
     }
-    tft->fillScreen(TFT_BLACK);
-    tft->setTextSize(5);
-    tft->setTextColor(TFT_CYAN);
-    tft->setCursor(35, 100);
-    tft->println("This a test on a large screen");
+    // tft->fillScreen(TFT_BLACK);
+    // tft->setTextSize(5);
+    // tft->setTextColor(TFT_CYAN);
+    // tft->setCursor(35, 100);
+    // tft->println("This a test on a large screen");
 
-    tft->drawRect(20, 80, virtualWidth - 60, 70, TFT_GREEN);
+    // tft->drawRect(20, 80, virtualWidth - 60, 70, TFT_GREEN);
+
+    tft->drawRGBBitmap(0,0,(uint16_t*)test_image,virtualWidth,virtualHeight);
 
 
     output();
