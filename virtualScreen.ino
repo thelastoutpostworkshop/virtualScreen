@@ -1,9 +1,11 @@
 #include "virtual.h"
-#include <TFT_eSPI.h>
 #include <Adafruit_GFX.h>
+#include <TFT_eSPI.h>
 
 #include "images/newyork.h"
 #include "images/highway.h"
+#include <Fonts/GFXFF/FreeSansBold24pt7b.h> 
+#include "fonts/Aurebesh_Bold32pt7b.h"
 #define test_image highway
 
 #define TFT_MISO 12
@@ -67,7 +69,7 @@ void setup()
         return;
     }
     tft->fillScreen(TFT_BLACK);
-    tft->setTextSize(8);
+    tft->setFont(&Aurebesh_Bold32pt7b);
     tft->setTextColor(TFT_CYAN);
     tft->setCursor(35, 100);
     tft->println("This a test on a large screen, resolution is 720 x 480 pixels!");
