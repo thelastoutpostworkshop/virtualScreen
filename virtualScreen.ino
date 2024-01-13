@@ -3,7 +3,8 @@
 #include <Adafruit_GFX.h>
 
 #include "images/newyork.h"
-#define test_image newyork
+#include "images/highway.h"
+#define test_image highway
 
 #define TFT_MISO 12
 #define TFT_MOSI 13
@@ -72,7 +73,7 @@ void setup()
 
     // tft->drawRect(20, 80, virtualWidth - 60, virtualHeight-80, TFT_GREEN);
 
-    tft->drawRGBBitmap(0, 0, (uint16_t *)test_image, virtualWidth, virtualHeight);
+    tft->drawRGBBitmap(0, 0, (uint16_t *)highway, highway_width, highway_height);
 
     output();
 }
