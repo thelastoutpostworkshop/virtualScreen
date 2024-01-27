@@ -88,7 +88,6 @@ void setup()
 
     // tft->drawRGBBitmap(0, 0, (uint16_t *)highway, highway_width, highway_height);
 
-    output();
 }
 
 void loop()
@@ -209,6 +208,7 @@ void calculateVirtualScreenSize()
 
 void output()
 {
+    Serial.println("Output called");
     for (int row = 0; row < ROWS; row++)
     {
         for (int col = 0; col < COLUMNS; col++)
