@@ -114,12 +114,15 @@ void test_2()
 
 void test_animation()
 {
-    int ballX = 30;             // Initial X position
-    int ballY = 30;             // Initial Y position
-    int ballSize = 20;          // Diameter of the ball
-    int velocityX = 8;          // X Velocity
-    int velocityY = 8;          // Y Velocity
+    int ballX = 30;               // Initial X position
+    int ballY = 30;               // Initial Y position
+    int ballSize = 20;            // Diameter of the ball
+    int velocityX = 8;            // X Velocity
+    int velocityY = 8;            // Y Velocity
+    uint16_t ballColor = TFT_RED; // Start with red color
+
     tft->fillScreen(TFT_BLACK); // Clear the screen
+
     for (int i = 0; i < 1000; i++)
     {
         tft->fillCircle(ballX, ballY, ballSize, TFT_BLACK);
@@ -129,20 +132,38 @@ void test_animation()
         ballY += velocityY;
 
         // Check for collisions with the screen edges
-        if (ballX <= 0 || ballX >= tft->width() - ballSize)
+        if (ballX <= 0 || ballX >= tft->width() - ballSize || ballY <= 0 || ballY >= tft->height() - ballSize)
         {
-            velocityX = -velocityX; // Reverse X direction
-        }
-        if (ballY <= 0 || ballY >= tft->height() - ballSize)
-        {
-            velocityY = -velocityY; // Reverse Y direction
+            if (ballX <= 0 || ballX >= tft->width() - ballSize)
+            {
+                velocityX = -velocityX; // Reverse X direction
+            }
+            if (ballY <= 0 || ballY >= tft->height() - ballSize)
+            {
+                velocityY = -velocityY; // Reverse Y direction
+            }
+
+            // Change the ball color on collision
+            ballColor = getRandomColor();
         }
 
         // Draw the new ball
-        tft->fillCircle(ballX, ballY, ballSize, TFT_RED);
+        tft->fillCircle(ballX, ballY, ballSize, ballColor);
+        // Assuming output() is a function to update the display
         output();
     }
 }
+
+uint16_t getRandomColor() {
+    // Generate random values for red (5 bits), green (6 bits), and blue (5 bits)
+    uint8_t red = random(0, 32);   // 0 to 31
+    uint8_t green = random(0, 64); // 0 to 63
+    uint8_t blue = random(0, 32);  // 0 to 31
+
+    // Combine them into one 16-bit color in RGB565 format
+    return (red << 11) | (green << 5) | blue;
+}
+
 
 void printCenteredText(const String &text, const GFXfont *font, uint16_t color)
 {
