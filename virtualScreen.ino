@@ -114,8 +114,8 @@ void test_2()
 
 void test_animation()
 {
-    int ballX = 30;               // Initial X position
-    int ballY = 30;               // Initial Y position
+    int ballX = 60;               // Initial X position
+    int ballY = 60;               // Initial Y position
     int ballSize = 20;            // Diameter of the ball
     int velocityX = 8;            // X Velocity
     int velocityY = 8;            // Y Velocity
