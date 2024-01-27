@@ -123,8 +123,8 @@ void printCenteredText(const String &text,const GFXfont *font,uint16_t color) {
     uint16_t w, h;
     tft->getTextBounds(text, 0, 0, &x1, &y1, &w, &h); // Calculate the bounds of the text
 
-    int x = (virtualWidth - w) / 2; // Calculate the x position to center the text
-    int y = (virtualHeight + h) / 2; // Center vertically
+    int x = (tft->width() - w) / 2; // Calculate the x position to center the text
+    int y = (tft->height() + h) / 2; // Center vertically
 
     tft->setCursor(x, y);
     tft->println(text);
