@@ -82,15 +82,19 @@ void setup()
 #ifdef FourScreensOneRow
     // test_2();
     // delay(5000);
-    test_animation();
+    // test_animation();
+    test_images();
 #endif
-    // tft->drawRect(20, 80, virtualWidth - 60, virtualHeight-80, TFT_GREEN);
 
-    // tft->drawRGBBitmap(0, 0, (uint16_t *)highway, highway_width, highway_height);
 }
 
 void loop()
 {
+}
+
+void test_images() {
+    tft->drawRGBBitmap(0, 0, (uint16_t *)newyork, newyork_width, newyork_height);
+    output();
 }
 
 void test_1()
