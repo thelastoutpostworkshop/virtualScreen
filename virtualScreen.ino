@@ -14,7 +14,9 @@
 #define TFT_DC 2
 #define TFT_RST 4
 
-// Adafruit_GC9A01A display(-1, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST, TFT_MISO);
+// Tests, uncomment one line only
+#define FourScreensOneRow
+
 TFT_eSPI display = TFT_eSPI();
 
 typedef struct
@@ -30,13 +32,16 @@ int virtualHeight = 0;
 int displayWidth = 0;
 int displayHeight = 0;
 
+#ifdef FourScreensOneRow
 #define ROWS 1    // Number of rows
 #define COLUMNS 4 // Number of columns
 Screen grid[ROWS][COLUMNS] = {
     {{.row = 0, .column = 0, .cs = 16, .rotation = 0},
-     {.row = 0, .column = 1, .cs = 15, .rotation = 20},
+     {.row = 0, .column = 1, .cs = 15, .rotation = 0},
      {.row = 0, .column = 2, .cs = 6, .rotation = 0},
-     {.row = 0, .column = 3, .cs = 7, .rotation = 2}}};
+     {.row = 0, .column = 3, .cs = 7, .rotation = 0}}};
+#endif
+
 // Screen grid[ROWS][COLUMNS] = {
 //     {{.row = 0, .column = 0, .cs = 7, .rotation = 2},
 //      {.row = 0, .column = 1, .cs = 6, .rotation = 2},
@@ -73,12 +78,9 @@ void setup()
         Serial.println("Memory Allocation for virtual screen failed");
         return;
     }
-    tft->fillScreen(TFT_BLACK);
-    tft->setFont(&FreeSansBold24pt7b);
-    tft->setTextColor(TFT_CYAN);
-    tft->setCursor(35, 100);
-    tft->println("This a test on a large screen, resolution is 720 x 480 pixels!");
-
+#ifdef FourScreensOneRow
+    test_1();
+#endif
     // tft->drawRect(20, 80, virtualWidth - 60, virtualHeight-80, TFT_GREEN);
 
     // tft->drawRGBBitmap(0, 0, (uint16_t *)highway, highway_width, highway_height);
@@ -88,6 +90,15 @@ void setup()
 
 void loop()
 {
+}
+
+void test_1()
+{
+    tft->fillScreen(TFT_BLACK);
+    tft->setFont(&FreeSansBold24pt7b);
+    tft->setTextColor(TFT_CYAN);
+    tft->setCursor(10, 75);
+    tft->println("This a test on a large screen, resolution is 720 x 480 pixels!");
 }
 
 void initDisplay()
