@@ -6,6 +6,7 @@
 #include "images/highway.h"
 #include <Fonts/GFXFF/FreeSansBold24pt7b.h>
 #include "fonts/Aurebesh_Bold32pt7b.h"
+#include "fonts/Bombing40pt7b.h"
 #define test_image highway
 
 #define TFT_MISO 12
@@ -79,7 +80,9 @@ void setup()
         return;
     }
 #ifdef FourScreensOneRow
-    test_1();
+    // test_1();
+    // delay(5000);
+    test_2();
 #endif
     // tft->drawRect(20, 80, virtualWidth - 60, virtualHeight-80, TFT_GREEN);
 
@@ -98,7 +101,33 @@ void test_1()
     tft->setFont(&FreeSansBold24pt7b);
     tft->setTextColor(TFT_CYAN);
     tft->setCursor(10, 75);
-    tft->println("This a test on a large screen, resolution is 720 x 480 pixels!");
+    tft->println("This a test on a large screen, resolution is 720 x 480 pixels!  You can use any AdafruitGFX functions on the virtual Screen.");
+    output();
+}
+void test_2()
+{
+    tft->fillScreen(TFT_BLACK);
+    tft->drawRect(10, 20, virtualWidth - 50, virtualHeight - 50, TFT_GREEN);
+    tft->drawRect(12, 23, virtualWidth - 48, virtualHeight - 48, TFT_GREEN);
+    tft->drawRoundRect(20, 50, virtualWidth - 80, virtualHeight - 100, 20, TFT_CYAN);
+    printCenteredText("Welcome to Virtual Screens!",&Bombing40pt7b,0x00ff0c);
+    output();
+}
+
+void printCenteredText(const String &text,const GFXfont *font,uint16_t color) {
+
+    tft->setFont(font);
+    tft->setTextColor(color);
+
+    int16_t x1, y1;
+    uint16_t w, h;
+    tft->getTextBounds(text, 0, 0, &x1, &y1, &w, &h); // Calculate the bounds of the text
+
+    int x = (virtualWidth - w) / 2; // Calculate the x position to center the text
+    int y = (virtualHeight + h) / 2; // Center vertically
+
+    tft->setCursor(x, y);
+    tft->println(text);
 }
 
 void initDisplay()
