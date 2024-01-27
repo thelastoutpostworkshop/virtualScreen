@@ -80,14 +80,13 @@ void setup()
         return;
     }
 #ifdef FourScreensOneRow
-    test_2();
+    // test_2();
     // delay(5000);
-    // test_animation();
+    test_animation();
 #endif
     // tft->drawRect(20, 80, virtualWidth - 60, virtualHeight-80, TFT_GREEN);
 
     // tft->drawRGBBitmap(0, 0, (uint16_t *)highway, highway_width, highway_height);
-
 }
 
 void loop()
@@ -118,10 +117,10 @@ void test_animation()
     int ballX = 30;             // Initial X position
     int ballY = 30;             // Initial Y position
     int ballSize = 20;          // Diameter of the ball
-    int velocityX = 4;          // X Velocity
-    int velocityY = 4;          // Y Velocity
+    int velocityX = 8;          // X Velocity
+    int velocityY = 8;          // Y Velocity
     tft->fillScreen(TFT_BLACK); // Clear the screen
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 1000; i++)
     {
         tft->fillCircle(ballX, ballY, ballSize, TFT_BLACK);
 
@@ -208,7 +207,6 @@ void calculateVirtualScreenSize()
 
 void output()
 {
-    Serial.println("Output called");
     for (int row = 0; row < ROWS; row++)
     {
         for (int col = 0; col < COLUMNS; col++)
@@ -218,7 +216,6 @@ void output()
             digitalWrite(currentScreen.cs, LOW);
             display.pushImage(0, 0, displayWidth, displayHeight, screenImage);
             digitalWrite(currentScreen.cs, HIGH);
-            Serial.printf("Screen cs=%d\n",currentScreen.cs);
         }
     }
 }
