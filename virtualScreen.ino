@@ -82,7 +82,7 @@ void setup()
 #ifdef FourScreensOneRow
     // test_1();
     // delay(5000);
-    test_2();
+    test_animation();
 #endif
     // tft->drawRect(20, 80, virtualWidth - 60, virtualHeight-80, TFT_GREEN);
 
@@ -110,11 +110,44 @@ void test_2()
     tft->drawRect(10, 20, virtualWidth - 50, virtualHeight - 50, TFT_GREEN);
     tft->drawRect(12, 23, virtualWidth - 48, virtualHeight - 48, TFT_GREEN);
     tft->drawRoundRect(20, 50, virtualWidth - 80, virtualHeight - 100, 20, TFT_CYAN);
-    printCenteredText("Welcome to Virtual Screens!",&Bombing40pt7b,0x00ff0c);
+    printCenteredText("Welcome to Virtual Screens!", &Bombing40pt7b, 0x00ff0c);
     output();
 }
 
-void printCenteredText(const String &text,const GFXfont *font,uint16_t color) {
+void test_animation()
+{
+    int ballX = 30;             // Initial X position
+    int ballY = 30;             // Initial Y position
+    int ballSize = 20;          // Diameter of the ball
+    int velocityX = 4;          // X Velocity
+    int velocityY = 4;          // Y Velocity
+    tft->fillScreen(TFT_BLACK); // Clear the screen
+    for (int i = 0; i < 1000; i++)
+    {
+        tft->fillCircle(ballX, ballY, ballSize, TFT_BLACK);
+
+        // Update the ball's position
+        ballX += velocityX;
+        ballY += velocityY;
+
+        // Check for collisions with the screen edges
+        if (ballX <= 0 || ballX >= tft->width() - ballSize)
+        {
+            velocityX = -velocityX; // Reverse X direction
+        }
+        if (ballY <= 0 || ballY >= tft->height() - ballSize)
+        {
+            velocityY = -velocityY; // Reverse Y direction
+        }
+
+        // Draw the new ball
+        tft->fillCircle(ballX, ballY, ballSize, TFT_RED);
+        output();
+    }
+}
+
+void printCenteredText(const String &text, const GFXfont *font, uint16_t color)
+{
 
     tft->setFont(font);
     tft->setTextColor(color);
@@ -123,7 +156,7 @@ void printCenteredText(const String &text,const GFXfont *font,uint16_t color) {
     uint16_t w, h;
     tft->getTextBounds(text, 0, 0, &x1, &y1, &w, &h); // Calculate the bounds of the text
 
-    int x = (tft->width() - w) / 2; // Calculate the x position to center the text
+    int x = (tft->width() - w) / 2;  // Calculate the x position to center the text
     int y = (tft->height() + h) / 2; // Center vertically
 
     tft->setCursor(x, y);
