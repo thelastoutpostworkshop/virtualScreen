@@ -3,7 +3,7 @@
 #include <TFT_eSPI.h>
 
 #include "images/newyork.h"
-#include "images/highway.h"
+#include "images/highway_720x480.h"
 #include <Fonts/GFXFF/FreeSansBold24pt7b.h>
 #include "fonts/Aurebesh_Bold32pt7b.h"
 #include "fonts/Bombing40pt7b.h"
