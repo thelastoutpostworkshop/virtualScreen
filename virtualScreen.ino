@@ -2,7 +2,7 @@
 #include <Adafruit_GFX.h>
 #include <TFT_eSPI.h>
 
-#include "images/newyork.h"
+#include "images/newyork_960x240.h"
 #include "images/highway_720x480.h"
 #include <Fonts/GFXFF/FreeSansBold24pt7b.h>
 #include "fonts/Aurebesh_Bold32pt7b.h"
