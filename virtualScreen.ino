@@ -4,6 +4,7 @@
 
 #include "images/newyork_960x240.h"
 #include "images/highway_720x480.h"
+#include "images/night_earth_960x240.h"
 #include <Fonts/GFXFF/FreeSansBold24pt7b.h>
 #include "fonts/Aurebesh_Bold32pt7b.h"
 #include "fonts/Bombing40pt7b.h"
@@ -94,6 +95,9 @@ void loop()
 
 void test_images() {
     tft->drawRGBBitmap(0, 0, (uint16_t *)newyork, newyork_width, newyork_height);
+    output();
+    delay(5000);
+    tft->drawRGBBitmap(0, 0, (uint16_t *)night_earth, night_earth_width, night_earth_height);
     output();
 }
 
