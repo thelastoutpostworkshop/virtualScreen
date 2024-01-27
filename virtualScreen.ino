@@ -80,9 +80,9 @@ void setup()
         return;
     }
 #ifdef FourScreensOneRow
-    // test_1();
+    test_2();
     // delay(5000);
-    test_animation();
+    // test_animation();
 #endif
     // tft->drawRect(20, 80, virtualWidth - 60, virtualHeight-80, TFT_GREEN);
 
@@ -122,7 +122,7 @@ void test_animation()
     int velocityX = 4;          // X Velocity
     int velocityY = 4;          // Y Velocity
     tft->fillScreen(TFT_BLACK); // Clear the screen
-    for (int i = 0; i < 1000; i++)
+    for (int i = 0; i < 100; i++)
     {
         tft->fillCircle(ballX, ballY, ballSize, TFT_BLACK);
 
@@ -169,9 +169,9 @@ void initDisplay()
     displayHeight = display.height();
     display.begin();
     display.setSwapBytes(true);
-    for (int i = 0; i < ROWS; ++i)
+    for (int i = 0; i < ROWS; i++)
     {
-        for (int j = 0; j < COLUMNS; ++j)
+        for (int j = 0; j < COLUMNS; j++)
         {
             pinMode(grid[i][j].cs, OUTPUT);
             digitalWrite(grid[i][j].cs, HIGH);
@@ -186,9 +186,9 @@ void initDisplay()
 }
 void calculateVirtualScreenSize()
 {
-    for (int i = 0; i < ROWS; ++i)
+    for (int i = 0; i < ROWS; i++)
     {
-        for (int j = 0; j < COLUMNS; ++j)
+        for (int j = 0; j < COLUMNS; j++)
         {
             if (i == 0)
             { // Add widths for the first row
@@ -209,15 +209,16 @@ void calculateVirtualScreenSize()
 
 void output()
 {
-    for (int row = 0; row < ROWS; ++row)
+    for (int row = 0; row < ROWS; row++)
     {
-        for (int col = 0; col < COLUMNS; ++col)
+        for (int col = 0; col < COLUMNS; col++)
         {
             Screen &currentScreen = grid[row][col];
             uint16_t *screenImage = getScreenImage(currentScreen);
             digitalWrite(currentScreen.cs, LOW);
             display.pushImage(0, 0, displayWidth, displayHeight, screenImage);
             digitalWrite(currentScreen.cs, HIGH);
+            Serial.printf("Screen cs=%d\n",currentScreen.cs);
         }
     }
 }
