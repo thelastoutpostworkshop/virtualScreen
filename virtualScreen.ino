@@ -4,7 +4,7 @@
 
 #include "images/newyork.h"
 #include "images/highway.h"
-#include <Fonts/GFXFF/FreeSansBold24pt7b.h> 
+#include <Fonts/GFXFF/FreeSansBold24pt7b.h>
 #include "fonts/Aurebesh_Bold32pt7b.h"
 #define test_image highway
 
@@ -30,15 +30,20 @@ int virtualHeight = 0;
 int displayWidth = 0;
 int displayHeight = 0;
 
-#define ROWS 2    // Number of rows
-#define COLUMNS 3 // Number of columns
+#define ROWS 1    // Number of rows
+#define COLUMNS 4 // Number of columns
 Screen grid[ROWS][COLUMNS] = {
-    {{.row = 0, .column = 0, .cs = 7, .rotation = 2},
-     {.row = 0, .column = 1, .cs = 6, .rotation = 2},
-     {.row = 0, .column = 2, .cs = 15, .rotation = 2}},
-    {{.row = 1, .column = 0, .cs = 16, .rotation = 0},
-     {.row = 1, .column = 1, .cs = 11, .rotation = 0},
-     {.row = 1, .column = 2, .cs = 9, .rotation = 0}}};
+    {{.row = 0, .column = 0, .cs = 16, .rotation = 0},
+     {.row = 0, .column = 1, .cs = 15, .rotation = 20},
+     {.row = 0, .column = 2, .cs = 6, .rotation = 0},
+     {.row = 0, .column = 3, .cs = 7, .rotation = 2}}};
+// Screen grid[ROWS][COLUMNS] = {
+//     {{.row = 0, .column = 0, .cs = 7, .rotation = 2},
+//      {.row = 0, .column = 1, .cs = 6, .rotation = 2},
+//      {.row = 0, .column = 2, .cs = 15, .rotation = 2}},
+//     {{.row = 1, .column = 0, .cs = 16, .rotation = 0},
+//      {.row = 1, .column = 1, .cs = 11, .rotation = 0},
+//      {.row = 1, .column = 2, .cs = 9, .rotation = 0}}};
 
 VirtualDisplay *tft;
 
@@ -69,7 +74,7 @@ void setup()
         return;
     }
     tft->fillScreen(TFT_BLACK);
-    tft->setFont(&Aurebesh_Bold32pt7b);
+    tft->setFont(&FreeSansBold24pt7b);
     tft->setTextColor(TFT_CYAN);
     tft->setCursor(35, 100);
     tft->println("This a test on a large screen, resolution is 720 x 480 pixels!");
