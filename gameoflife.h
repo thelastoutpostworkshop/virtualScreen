@@ -1,6 +1,4 @@
-#ifndef _VIRTUAL_SCREEN_
 #include "virtualScreen.h"
-#endif
 
 #include "fonts/BebasNeue_Regular13pt7b.h"
 
