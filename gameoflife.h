@@ -10,6 +10,7 @@ const int squareSize = 10;
 const int statsWidth = 175; // Width of the stats area on the left, adjust as needed
 int aliveCellsCount = 0;
 int changeRate = 0;
+std::vector<int> populationHistory;
 
 VirtualDisplay *gameTFT;
 
@@ -113,6 +114,7 @@ void updateGameOfLife()
     }
 
     aliveCellsCount = newAliveCellsCount;
+    populationHistory.push_back(newAliveCellsCount);
     changeRate = newChangeRate;
 }
 
@@ -128,6 +130,42 @@ void drawGameOfLife()
     }
     gameTFT->output();
 }
+void drawPopulationGraph()
+{
+    int graphWidth = statsWidth - 10;                  // Width of the graph, leaving some margin
+    int graphHeight = 50;                              // Height of the graph, adjust as needed
+    int graphX = 5;                                    // X position of the graph
+    int graphY = gameTFT->height() - graphHeight - 10; // Y position, placed at the bottom
+    int titleHeight = 15;                              // Height for the title area
+
+    // Clear the area for the graph and title
+    gameTFT->fillRect(graphX, graphY - titleHeight, graphWidth, graphHeight + titleHeight, TFT_BLACK);
+
+    // Draw the title for the graph
+    gameTFT->setTextColor(TFT_WHITE);
+    gameTFT->setCursor(graphX, graphY - titleHeight); // Set position for the title
+    gameTFT->print("Population Over Time");
+
+    // Check if there is enough data to draw the graph
+    if (populationHistory.size() < 2)
+        return;
+
+    // Calculate the scaling factor for the graph
+    int maxPopulation = *std::max_element(populationHistory.begin(), populationHistory.end());
+    float scaleY = static_cast<float>(graphHeight) / maxPopulation;
+    float scaleX = static_cast<float>(graphWidth) / (populationHistory.size() - 1);
+
+    // Draw the graph line
+    for (size_t i = 0; i < populationHistory.size() - 1; ++i)
+    {
+        int x0 = graphX + i * scaleX;
+        int y0 = graphY + graphHeight - populationHistory[i] * scaleY;
+        int x1 = graphX + (i + 1) * scaleX;
+        int y1 = graphY + graphHeight - populationHistory[i + 1] * scaleY;
+        gameTFT->drawLine(x0, y0, x1, y1, TFT_YELLOW);
+    }
+}
+
 
 void drawStats(int generation)
 {
@@ -159,6 +197,7 @@ void test_gameOfLife(VirtualDisplay *tft)
         updateGameOfLife(); // Update the grid
         drawGameOfLife();   // Draw the grid
         drawStats(i);       // Draw the stats with the current generation
+        drawPopulationGraph();
 
         delay(100); // Delay between generations
     }
