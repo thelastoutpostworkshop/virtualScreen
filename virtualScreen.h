@@ -83,13 +83,10 @@ private:
 
     uint16_t *getScreenImage(const Screen &screen)
     {
-        // Allocate memory for the screen image
-        uint16_t *screenImage = getDisplayBuffer();
-
         // Calculate the starting position of the screen in the buffer
         uint32_t position = (screen.row * display.height() * screenBuilder->width()) + (screen.column * display.width());
 
-        uint16_t *buffer = (uint16_t *)getCanvas();
+        uint16_t *buffer = canvas;
         uint16_t *startPos = buffer + position;
 
         // Copy the screen image from the buffer
@@ -97,11 +94,11 @@ private:
         {
             for (int x = 0; x < display.width(); ++x)
             {
-                screenImage[y * display.width() + x] = startPos[y * screenBuilder->width() + x];
+                displayBuffer[y * display.width() + x] = startPos[y * screenBuilder->width() + x];
             }
         }
 
-        return screenImage;
+        return displayBuffer;
     }
 
     void initPhysicalScreens() {
@@ -144,6 +141,8 @@ public:
     void begin()
     {
         initPhysicalScreens();
+        Serial.printf("Virtual Screen Width=%d\n",_width);
+        Serial.printf("Virtual Screen Height=%d\n",_height);
     }
 
     void output()
@@ -179,16 +178,6 @@ public:
     int16_t height()
     {
         return _height;
-    }
-
-    uint16_t *getCanvas()
-    {
-        return canvas;
-    }
-
-    uint16_t *getDisplayBuffer()
-    {
-        return displayBuffer;
     }
 
     bool ready()
