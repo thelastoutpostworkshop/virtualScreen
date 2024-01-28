@@ -34,15 +34,13 @@ void setup()
         Serial.println("No PSRAM!");
         return;
     }
+    Serial.printf("PSRAM Left = %lu\n", ESP.getFreePsram());
 
     ScreenBuilder builder;
     builder.addRow({{16, 0}, {15, 0},{6,0},{7,0}});
     tft = new VirtualDisplay(builder.width(),builder.height(),&builder);
-    tft->begin();
 
-    Serial.printf("PSRAM Left = %lu\n", ESP.getFreePsram());
-
-    if (!tft->ready())
+    if (!tft->begin())
     {
         Serial.println("Memory Allocation for virtual screen failed");
         return;

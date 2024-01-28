@@ -138,11 +138,12 @@ public:
         screenBuilder = builder;
     }
 
-    void begin()
+    bool begin()
     {
         initPhysicalScreens();
         Serial.printf("Virtual Screen Width=%d\n",_width);
         Serial.printf("Virtual Screen Height=%d\n",_height);
+        return _ready;
     }
 
     void output()
@@ -178,11 +179,6 @@ public:
     int16_t height()
     {
         return _height;
-    }
-
-    bool ready()
-    {
-        return _ready;
     }
 
     void drawPixel(int16_t x, int16_t y, uint16_t color) override
