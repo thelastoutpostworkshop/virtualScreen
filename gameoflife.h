@@ -1,18 +1,31 @@
 #ifndef _VIRTUAL_SCREEN_
 #include "virtualScreen.h"
 #endif
-#ifndef _TFT_eSPIH_
-#include <TFT_eSPI.h>
-#endif
-const int gridWidth = 64;  // Width of the grid
-const int gridHeight = 48; // Height of the grid
-bool currentGrid[gridHeight][gridWidth];
-bool nextGrid[gridHeight][gridWidth];
+
+int gridWidth;  // Width of the grid
+int gridHeight; // Height of the grid
+bool **currentGrid;
+bool **nextGrid;
+const int squareSize = 10; 
+
 VirtualDisplay *gameTFT;
 
 void setupGameOfLife()
 {
-    // Randomly initialize the grid
+    gridWidth = gameTFT->width() / squareSize; // Number of squares horizontally
+    gridHeight = gameTFT->height() / squareSize; // Number of squares vertically
+
+
+    // Allocate memory for the grids
+    currentGrid = new bool *[gridHeight];
+    nextGrid = new bool *[gridHeight];
+    for (int y = 0; y < gridHeight; y++)
+    {
+        currentGrid[y] = new bool[gridWidth];
+        nextGrid[y] = new bool[gridWidth];
+    }
+
+    // Randomly initialize the currentGrid
     for (int y = 0; y < gridHeight; y++)
     {
         for (int x = 0; x < gridWidth; x++)
@@ -20,6 +33,17 @@ void setupGameOfLife()
             currentGrid[y][x] = random(2); // Randomly alive or dead
         }
     }
+}
+
+void cleanupGameOfLife()
+{
+    for (int y = 0; y < gridHeight; y++)
+    {
+        delete[] currentGrid[y];
+        delete[] nextGrid[y];
+    }
+    delete[] currentGrid;
+    delete[] nextGrid;
 }
 
 void updateGameOfLife()
@@ -79,11 +103,13 @@ void drawGameOfLife()
     {
         for (int x = 0; x < gridWidth; x++)
         {
-            gameTFT->drawPixel(x, y, currentGrid[y][x] ? TFT_WHITE : TFT_BLACK);
+            uint16_t color = currentGrid[y][x] ? TFT_WHITE : TFT_BLACK;
+            gameTFT->fillRect(x * squareSize, y * squareSize, squareSize, squareSize, color);
         }
     }
     gameTFT->output();
 }
+
 
 void test_gameOfLife(VirtualDisplay *tft)
 {
@@ -96,4 +122,5 @@ void test_gameOfLife(VirtualDisplay *tft)
         drawGameOfLife();   // Draw the grid
         delay(100);         // Delay between generations
     }
+    cleanupGameOfLife(); // Clean up the dynamically allocated memory
 }

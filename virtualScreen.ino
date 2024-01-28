@@ -48,9 +48,9 @@ void setup()
     // test_2();
     // delay(5000);
     // test_animation();
-    test_images();
+    // test_images();
     // test_pong();
-    // test_gameOfLife(tft);
+    test_gameOfLife(tft);
 }
 
 void loop()
