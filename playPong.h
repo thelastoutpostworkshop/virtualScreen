@@ -15,7 +15,7 @@ void drawScores(VirtualDisplay *tft, int leftScore, int rightScore)
     tft->setCursor(messageAreaWidth + 3, 35);
     tft->print("Player 1: ");
     tft->print(leftScore);
-    tft->setCursor(735, 35);
+    tft->setCursor(721, 35);
     tft->print("Player 2: ");
     tft->print(rightScore);
 }
