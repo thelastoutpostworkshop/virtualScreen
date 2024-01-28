@@ -1,4 +1,5 @@
 #include "virtualScreen.h"
+#include "fonts/Fun_Games20pt7b.h"
 
 const int messageAreaWidth = 240; // Width of the message area on the left
 const int scoreAreaHeight = 50;  // Height of the score area at the top
@@ -6,16 +7,15 @@ const int scoreAreaHeight = 50;  // Height of the score area at the top
 void drawScores(VirtualDisplay *tft, int leftScore, int rightScore)
 {
     // Clear the score area
-    tft->fillRect(messageAreaWidth, 0, tft->width() - messageAreaWidth, scoreAreaHeight, TFT_BLACK);
-    tft->drawRoundRect(messageAreaWidth, 0, tft->width() - messageAreaWidth, scoreAreaHeight,20, 0x17bb);
+    tft->fillRoundRect(messageAreaWidth, 0, tft->width() - messageAreaWidth, scoreAreaHeight,20, 0x17bb);
 
     // Set text properties and display scores
-    tft->setTextColor(TFT_WHITE);
-    tft->setTextSize(2); // Adjust size as needed
-    tft->setCursor(messageAreaWidth + 10, 5);
+    tft->setTextColor(TFT_BLACK);
+    tft->setFont(&Fun_Games20pt7b);
+    tft->setCursor(messageAreaWidth + 3, 35);
     tft->print("Player 1: ");
     tft->print(leftScore);
-    tft->setCursor(735, 5);
+    tft->setCursor(735, 35);
     tft->print("Player 2: ");
     tft->print(rightScore);
 }
