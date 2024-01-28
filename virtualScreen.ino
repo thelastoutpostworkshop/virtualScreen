@@ -10,6 +10,7 @@
 #include "fonts/Bombing40pt7b.h"
 
 #include "gameoflife.h"
+#include "maze.h"
 #define test_image highway
 
 #define TFT_MISO 12
@@ -17,7 +18,6 @@
 #define TFT_SCLK 18
 #define TFT_DC 2
 #define TFT_RST 4
-
 
 VirtualDisplay *tft;
 
@@ -37,8 +37,8 @@ void setup()
     Serial.printf("PSRAM Left = %lu\n", ESP.getFreePsram());
 
     ScreenBuilder builder;
-    builder.addRow({{16, 0}, {15, 0},{6,0},{7,0}});
-    tft = new VirtualDisplay(builder.width(),builder.height(),&builder);
+    builder.addRow({{16, 0}, {15, 0}, {6, 0}, {7, 0}});
+    tft = new VirtualDisplay(builder.width(), builder.height(), &builder);
 
     if (!tft->begin())
     {
@@ -50,7 +50,8 @@ void setup()
     // test_animation();
     // test_images();
     // test_pong();
-    test_gameOfLife(tft);
+    // test_gameOfLife(tft);
+    test_maze(tft);
 }
 
 void loop()
@@ -133,8 +134,8 @@ void test_2()
 {
     tft->fillScreen(TFT_BLACK);
     tft->drawRect(10, 20, tft->width() - 50, tft->height() - 50, TFT_GREEN);
-    tft->drawRect(12, 23,  tft->width() - 48, tft->height() - 48, TFT_GREEN);
-    tft->drawRoundRect(20, 50,  tft->width() - 80, tft->height() - 100, 20, TFT_CYAN);
+    tft->drawRect(12, 23, tft->width() - 48, tft->height() - 48, TFT_GREEN);
+    tft->drawRoundRect(20, 50, tft->width() - 80, tft->height() - 100, 20, TFT_CYAN);
     printCenteredText("Welcome to Virtual Screens!", &Bombing40pt7b, 0x00ff0c);
     tft->output();
 }
@@ -208,5 +209,3 @@ void printCenteredText(const String &text, const GFXfont *font, uint16_t color)
     tft->setCursor(x, y);
     tft->println(text);
 }
-
-
