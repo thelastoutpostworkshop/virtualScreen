@@ -17,7 +17,8 @@ struct Cell
     bool rightWall = true;
 };
 
-const int cellSize = 30; // Global cell size in pixels
+const int cellSize = 30;   // Global cell size in pixels
+const int paddingSize = 5; // Total padding in pixels, adjust as needed
 
 std::vector<std::vector<Cell>> maze;
 int mazeWidth;  // Maze width in cells
@@ -128,19 +129,26 @@ void drawMaze(VirtualDisplay *display)
 
 void setupMaze()
 {
+    // Adjusted dimensions to account for padding
+    mazeWidth = (mazeTFT->width() - paddingSize) / cellSize;   // Ensure odd number
+    mazeHeight = (mazeTFT->height() - paddingSize) / cellSize; // Ensure odd number
 
-    // Define the size of the maze
-    mazeWidth = (mazeTFT->width() / cellSize) | 1;   // Ensure odd number
-    mazeHeight = (mazeTFT->height() / cellSize) | 1; // Ensure odd number
+    // Ensure dimensions are odd numbers
+    if (mazeWidth % 2 == 0)
+    {
+        mazeWidth--;
+    }
+    if (mazeHeight % 2 == 0)
+    {
+        mazeHeight--;
+    }
 
     // Allocate memory for the maze grid
     maze.resize(mazeHeight, std::vector<Cell>(mazeWidth));
 
-    // Generate the maze
-    generateMaze(); // Implement this function as per the earlier discussion
-
-    // Draw the maze
-    drawMaze(mazeTFT); // Implement this function to draw the maze on the display
+    // Generate and draw the maze
+    generateMaze();
+    drawMaze(mazeTFT);
 }
 
 void test_maze(VirtualDisplay *tft)
