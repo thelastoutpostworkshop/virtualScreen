@@ -1,5 +1,5 @@
 #ifndef _VIRTUAL_SCREEN_
-#include "virtual.h"
+#include "virtualScreen.h"
 #endif
 #ifndef _TFT_eSPIH_
 #include <TFT_eSPI.h>
