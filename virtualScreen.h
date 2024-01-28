@@ -23,8 +23,7 @@ typedef struct
     int rotation;
 } Screen;
 
-class ScreenBuilder
-{
+class ScreenBuilder {
     std::vector<Screen> screens;
     int totalRows = 0;
     int maxColumns = 0;
@@ -32,45 +31,36 @@ class ScreenBuilder
     int virtualScreenHeight = 0;
 
 public:
-    ScreenBuilder &addRow(std::initializer_list<ScreenRow> screenRows)
-    {
+    ScreenBuilder &addRow(std::initializer_list<ScreenRow> screenRows) {
         int columnCount = screenRows.size();
         maxColumns = std::max(maxColumns, columnCount);
-
         int column = 0;
-        for (const auto &screenRow : screenRows)
-        {
+        for (const auto &screenRow : screenRows) {
             screens.push_back({totalRows, column, screenRow.cs, screenRow.rotation});
             ++column;
         }
         ++totalRows;
-        return *this;
-    }
-    const std::vector<Screen> &getScreens() const
-    {
-        return screens;
-    }
-    int width()
-    {
-        return virtualScreenWidth;
-    }
-    int height()
-    {
-        return virtualScreenHeight;
-    }
 
-    void build()
-    {
-        // Assuming display.width() and display.height() are available
+        // Update virtual screen dimensions
         virtualScreenWidth = display.width() * maxColumns;
         virtualScreenHeight = display.height() * totalRows;
 
-        Serial.print("Virtual Screen Width: ");
-        Serial.println(virtualScreenWidth);
-        Serial.print("Virtual Screen Height: ");
-        Serial.println(virtualScreenHeight);
+        return *this;
+    }
+
+    const std::vector<Screen> &getScreens() const {
+        return screens;
+    }
+
+    int width() const {
+        return virtualScreenWidth;
+    }
+
+    int height() const {
+        return virtualScreenHeight;
     }
 };
+
 
 typedef void (*CallbackFunction)();
 class VirtualDisplay : public Adafruit_GFX

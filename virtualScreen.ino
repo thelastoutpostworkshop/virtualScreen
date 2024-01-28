@@ -36,9 +36,7 @@ void setup()
     }
 
     ScreenBuilder builder;
-    builder.addRow({{16, 0}, {15, 0},{6,0},{7,0}})
-        .build();
-
+    builder.addRow({{16, 0}, {15, 0},{6,0},{7,0}});
     tft = new VirtualDisplay(builder.width(),builder.height(),&builder);
     tft->begin();
 
