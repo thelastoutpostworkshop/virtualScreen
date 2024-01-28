@@ -4,7 +4,6 @@
 #include <vector>
 #include <stack>
 #include <utility> // For std::pair
-#include <random>
 
 VirtualDisplay *mazeTFT;
 
@@ -115,7 +114,7 @@ void generateMaze()
         if (!unvisitedNeighbors.empty())
         {
             // Randomly select a neighbor
-            auto [nextX, nextY] = unvisitedNeighbors[rand() % unvisitedNeighbors.size()];
+            auto [nextX, nextY] = unvisitedNeighbors[esp_random() % unvisitedNeighbors.size()];
 
             // Remove the wall between the current cell and the chosen cell
             if (nextX == x + 1)
