@@ -7,7 +7,9 @@ int gridHeight; // Height of the grid
 bool **currentGrid;
 bool **nextGrid;
 const int squareSize = 10;
-const int statsWidth = 75; // Width of the stats area on the left, adjust as needed
+const int statsWidth = 175; // Width of the stats area on the left, adjust as needed
+int aliveCellsCount = 0;
+int changeRate = 0;
 
 VirtualDisplay *gameTFT;
 
@@ -30,7 +32,7 @@ void setupGameOfLife()
     {
         for (int x = 0; x < gridWidth; x++)
         {
-            currentGrid[y][x] = random(2); // Randomly alive or dead
+            currentGrid[y][x] = esp_random() % 2; // Randomly alive or dead
         }
     }
 }
@@ -48,6 +50,9 @@ void cleanupGameOfLife()
 
 void updateGameOfLife()
 {
+    int newAliveCellsCount = 0;
+    int newChangeRate = 0;
+
     // Apply Game of Life rules to update the grid
     for (int y = 0; y < gridHeight; y++)
     {
@@ -61,7 +66,9 @@ void updateGameOfLife()
                 for (int j = -1; j <= 1; j++)
                 {
                     if (i == 0 && j == 0)
+                    {
                         continue; // Skip the current cell
+                    }
                     int nx = x + j;
                     int ny = y + i;
                     if (nx >= 0 && nx < gridWidth && ny >= 0 && ny < gridHeight && currentGrid[ny][nx])
@@ -72,22 +79,31 @@ void updateGameOfLife()
             }
 
             // Apply the rules of the Game of Life
+            bool newState = currentGrid[y][x];
             if (currentGrid[y][x] && (aliveNeighbors < 2 || aliveNeighbors > 3))
             {
-                nextGrid[y][x] = false; // Cell dies
+                newState = false; // Cell dies
             }
             else if (!currentGrid[y][x] && aliveNeighbors == 3)
             {
-                nextGrid[y][x] = true; // Cell becomes alive
+                newState = true; // Cell becomes alive
             }
-            else
+
+            if (newState != currentGrid[y][x])
             {
-                nextGrid[y][x] = currentGrid[y][x]; // State remains the same
+                newChangeRate++; // Increment change rate if cell state changes
             }
+
+            if (newState)
+            {
+                newAliveCellsCount++; // Count alive cells
+            }
+
+            nextGrid[y][x] = newState;
         }
     }
 
-    // Copy nextGrid to currentGrid for the next iteration
+    // Copy nextGrid to currentGrid for the next iteration and update stats
     for (int y = 0; y < gridHeight; y++)
     {
         for (int x = 0; x < gridWidth; x++)
@@ -95,6 +111,9 @@ void updateGameOfLife()
             currentGrid[y][x] = nextGrid[y][x];
         }
     }
+
+    aliveCellsCount = newAliveCellsCount;
+    changeRate = newChangeRate;
 }
 
 void drawGameOfLife()
@@ -121,6 +140,13 @@ void drawStats(int generation)
     gameTFT->setCursor(5, 5); // Adjust text position as needed
     gameTFT->print("Gen:");
     gameTFT->print(generation);
+    gameTFT->setTextColor(TFT_WHITE);
+    gameTFT->setCursor(5, 25); // Adjust position as needed
+    gameTFT->print("Alive: ");
+    gameTFT->print(aliveCellsCount);
+    gameTFT->setCursor(5, 45); // Adjust for next stat position
+    gameTFT->print("Change: ");
+    gameTFT->print(changeRate);
 }
 
 void test_gameOfLife(VirtualDisplay *tft)
