@@ -24,6 +24,61 @@ std::vector<std::vector<Cell>> maze;
 int mazeWidth;  // Maze width in cells
 int mazeHeight; // Maze height in cells
 
+std::vector<std::pair<int, int>> solveMaze()
+{
+    std::stack<std::pair<int, int>> stack;
+    std::vector<std::vector<bool>> visited(mazeHeight, std::vector<bool>(mazeWidth, false));
+    std::vector<std::pair<int, int>> path;
+
+    // Start from an edge, for example, (0, 0)
+    stack.push({0, 0});
+    visited[0][0] = true;
+
+    while (!stack.empty())
+    {
+        auto [x, y] = stack.top();
+        path.push_back({x, y}); // Add to path
+
+        // Check if the center is reached
+        if (x == mazeWidth / 2 && y == mazeHeight / 2)
+        {
+            return path; // Return the path to the center
+        }
+
+        // Find unvisited neighbors without walls in between
+        std::vector<std::pair<int, int>> unvisitedNeighbors;
+        if (x > 0 && !visited[y][x - 1] && !maze[y][x].leftWall)
+        {
+            unvisitedNeighbors.push_back({x - 1, y});
+        }
+        if (y > 0 && !visited[y - 1][x] && !maze[y][x].topWall)
+        {
+            unvisitedNeighbors.push_back({x, y - 1});
+        }
+        if (x < mazeWidth - 1 && !visited[y][x + 1] && !maze[y][x].rightWall)
+        {
+            unvisitedNeighbors.push_back({x + 1, y});
+        }
+        if (y < mazeHeight - 1 && !visited[y + 1][x] && !maze[y][x].bottomWall)
+        {
+            unvisitedNeighbors.push_back({x, y + 1});
+        }
+
+        if (!unvisitedNeighbors.empty())
+        {
+            auto [nextX, nextY] = unvisitedNeighbors.back();
+            visited[nextY][nextX] = true;
+            stack.push({nextX, nextY});
+        }
+        else
+        {
+            stack.pop();
+            path.pop_back(); // Remove from path if it's a dead end
+        }
+    }
+    return path; // In case the center can't be reached, return the attempted path
+}
+
 void generateMaze()
 {
     std::stack<std::pair<int, int>> stack;
@@ -93,8 +148,7 @@ void generateMaze()
         }
     }
 }
-
-void drawMaze(VirtualDisplay *display)
+void drawMaze(VirtualDisplay *display, const std::vector<std::pair<int, int>> &path)
 {
     for (int y = 0; y < mazeHeight; y++)
     {
@@ -124,7 +178,22 @@ void drawMaze(VirtualDisplay *display)
         }
     }
 
-    display->output(); // Refresh the display with the drawn maze
+    // Draw the solution path in yellow
+    for (size_t i = 0; i < path.size() - 1; ++i)
+    {
+        // Coordinates of the current cell
+        int x0 = path[i].first * cellSize + cellSize / 2;
+        int y0 = path[i].second * cellSize + cellSize / 2;
+
+        // Coordinates of the next cell
+        int x1 = path[i + 1].first * cellSize + cellSize / 2;
+        int y1 = path[i + 1].second * cellSize + cellSize / 2;
+
+        // Draw line from the center of the current cell to the center of the next cell
+        display->drawLine(x0, y0, x1, y1, TFT_YELLOW);
+    }
+
+    display->output();
 }
 
 void setupMaze()
@@ -148,7 +217,9 @@ void setupMaze()
 
     // Generate and draw the maze
     generateMaze();
-    drawMaze(mazeTFT);
+    auto path = solveMaze();
+
+    drawMaze(mazeTFT, path);
 }
 
 void test_maze(VirtualDisplay *tft)
