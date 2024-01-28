@@ -1,11 +1,7 @@
-#ifndef _VIRTUAL_SCREEN_
 #include "virtualScreen.h"
-#endif
 #include <vector>
 #include <stack>
 #include <utility> // For std::pair
-
-VirtualDisplay *mazeTFT;
 
 struct Cell
 {
@@ -214,7 +210,7 @@ void drawMaze(VirtualDisplay *display, const std::vector<std::pair<int, int>> &p
     display->output();
 }
 
-void setupMaze()
+void setupMaze(VirtualDisplay *mazeTFT)
 {
     // Adjusted dimensions to account for padding
     mazeWidth = (mazeTFT->width() - paddingSize) / cellSize;   // Ensure odd number
@@ -240,9 +236,8 @@ void setupMaze()
     drawMaze(mazeTFT, path);
 }
 
-void test_maze(VirtualDisplay *tft)
+void solveMaze(VirtualDisplay *tft)
 {
-    mazeTFT = tft;
-    mazeTFT->fillScreen(TFT_BLACK);
-    setupMaze();
+    tft->fillScreen(TFT_BLACK);
+    setupMaze(tft);
 }

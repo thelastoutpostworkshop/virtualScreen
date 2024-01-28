@@ -36,9 +36,9 @@ void setup()
     }
     Serial.printf("PSRAM Left = %lu\n", ESP.getFreePsram());
 
-    ScreenBuilder builder;
-    builder.addRow({{16, 0}, {15, 0}, {6, 0}, {7, 0}});
-    tft = new VirtualDisplay(builder.width(), builder.height(), &builder);
+    ScreenBuilder screens;
+    screens.addRow({{16, 0}, {15, 0}, {6, 0}, {7, 0}});
+    tft = new VirtualDisplay(screens.width(), screens.height(), &screens);
 
     if (!tft->begin())
     {
@@ -48,11 +48,12 @@ void setup()
 
     // Demonstrations
     //
+    
     // test_animation();
     // test_images();
     // test_pong();
-    gameOfLife(tft);
-    // test_maze(tft);
+    // gameOfLife(tft);
+    solveMaze(tft);
 }
 
 void loop()
