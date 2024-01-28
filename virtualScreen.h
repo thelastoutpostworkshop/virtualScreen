@@ -62,7 +62,6 @@ public:
 };
 
 
-typedef void (*CallbackFunction)();
 class VirtualDisplay : public Adafruit_GFX
 {
 private:
@@ -73,7 +72,6 @@ private:
     int16_t _width;
     int16_t _height;
     bool _ready = false;
-    CallbackFunction callBackFunction;
     ScreenBuilder *screenBuilder;
 
     void clearDisplayBuffer()
@@ -166,11 +164,6 @@ public:
             free(canvas);
         }
     }
-    // void setCallBack(CallbackFunction callback)
-    // {
-    //     callBackFunction = callback;
-    //     memcpy(canvasBefore, canvas, canvasSize);
-    // }
 
     int16_t width()
     {
