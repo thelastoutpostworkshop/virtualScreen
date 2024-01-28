@@ -17,6 +17,8 @@ struct Cell
     bool rightWall = true;
 };
 
+const int cellSize = 30; // Global cell size in pixels
+
 std::vector<std::vector<Cell>> maze;
 int mazeWidth;  // Maze width in cells
 int mazeHeight; // Maze height in cells
@@ -68,8 +70,6 @@ void generateMaze()
 }
 void drawMaze(VirtualDisplay *display)
 {
-    int cellSize = 10; // Size of each cell in pixels
-
     for (int y = 0; y < mazeHeight; y++)
     {
         for (int x = 0; x < mazeWidth; x++)
@@ -105,7 +105,6 @@ void setupMaze()
 {
 
     // Define the size of the maze
-    int cellSize = 30;                         // Size of each cell in pixels, adjust as needed
     mazeWidth = mazeTFT->width() / cellSize;   // Number of cells horizontally
     mazeHeight = mazeTFT->height() / cellSize; // Number of cells vertically
 
