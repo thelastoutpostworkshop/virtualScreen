@@ -188,9 +188,16 @@ void drawMaze(VirtualDisplay *display, const std::vector<std::pair<int, int>> &p
         int x1 = path[i + 1].first * cellSize + cellSize / 2;
         int y1 = path[i + 1].second * cellSize + cellSize / 2;
 
-        // Draw line from the center of the current cell to the center of the next cell
-        display->drawLine(x0, y0, x1, y1, TFT_YELLOW);
-        display->output();
+        // Check if the next cell is a direct neighbor of the current cell
+        bool isNeighbor = (path[i].first == path[i + 1].first && abs(path[i].second - path[i + 1].second) == 1) ||
+                          (path[i].second == path[i + 1].second && abs(path[i].first - path[i + 1].first) == 1);
+
+        // Draw line only if the next cell is a neighbor
+        if (isNeighbor)
+        {
+            display->drawLine(x0, y0, x1, y1, TFT_YELLOW);
+            display->output();
+        }
     }
     if (!path.empty())
     {
