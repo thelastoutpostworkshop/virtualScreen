@@ -114,6 +114,24 @@ private:
         return screenImage;
     }
 
+    void initPhysicalScreens() {
+        display.begin();
+        display.setSwapBytes(true);
+        const auto &screens = screenBuilder->getScreens();
+
+        for (const auto &screen : screens)
+        {
+            pinMode(screen.cs, OUTPUT);
+            digitalWrite(screen.cs, HIGH);
+        }
+        for (const auto &screen : screens)
+        {
+            digitalWrite(screen.cs, LOW);
+            display.setRotation(screen.rotation);
+            digitalWrite(screen.cs, HIGH);
+        }
+    }
+
 public:
     VirtualDisplay(int16_t w, int16_t h, ScreenBuilder *builder) : Adafruit_GFX(w, h)
     {
@@ -135,21 +153,7 @@ public:
 
     void begin()
     {
-        display.begin();
-        display.setSwapBytes(true);
-        const auto &screens = screenBuilder->getScreens();
-
-        for (const auto &screen : screens)
-        {
-            pinMode(screen.cs, OUTPUT);
-            digitalWrite(screen.cs, HIGH);
-        }
-        for (const auto &screen : screens)
-        {
-            digitalWrite(screen.cs, LOW);
-            display.setRotation(screen.rotation);
-            digitalWrite(screen.cs, HIGH);
-        }
+        initPhysicalScreens();
     }
 
     void output()
