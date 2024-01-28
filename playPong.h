@@ -7,15 +7,16 @@ void drawScores(VirtualDisplay *tft, int leftScore, int rightScore)
 {
     // Clear the score area
     tft->fillRect(messageAreaWidth, 0, tft->width() - messageAreaWidth, scoreAreaHeight, TFT_BLACK);
+    tft->drawRoundRect(messageAreaWidth, 0, tft->width() - messageAreaWidth, scoreAreaHeight,20, 0x17bb);
 
     // Set text properties and display scores
     tft->setTextColor(TFT_WHITE);
     tft->setTextSize(2); // Adjust size as needed
     tft->setCursor(messageAreaWidth + 10, 5);
-    tft->print("Left: ");
+    tft->print("Player 1: ");
     tft->print(leftScore);
-    tft->setCursor(tft->width() / 2 + 10, 5);
-    tft->print("Right: ");
+    tft->setCursor(735, 5);
+    tft->print("Player 2: ");
     tft->print(rightScore);
 }
 
