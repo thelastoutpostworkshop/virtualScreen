@@ -26,10 +26,12 @@ int mazeHeight; // Maze height in cells
 void generateMaze()
 {
     std::stack<std::pair<int, int>> stack;
-    int currentX = 0;
-    int currentY = 0;
-    maze[currentY][currentX].visited = true;
-    stack.push({currentX, currentY});
+
+    // Start from the center of the maze
+    int centerX = mazeWidth / 2;
+    int centerY = mazeHeight / 2;
+    maze[centerY][centerX].visited = true;
+    stack.push({centerX, centerY});
 
     while (!stack.empty())
     {
@@ -38,13 +40,21 @@ void generateMaze()
 
         // Check unvisited neighbors
         if (x > 0 && !maze[y][x - 1].visited)
+        {
             unvisitedNeighbors.push_back({x - 1, y});
+        }
         if (y > 0 && !maze[y - 1][x].visited)
+        {
             unvisitedNeighbors.push_back({x, y - 1});
+        }
         if (x < mazeWidth - 1 && !maze[y][x + 1].visited)
+        {
             unvisitedNeighbors.push_back({x + 1, y});
+        }
         if (y < mazeHeight - 1 && !maze[y + 1][x].visited)
+        {
             unvisitedNeighbors.push_back({x, y + 1});
+        }
 
         if (!unvisitedNeighbors.empty())
         {
@@ -57,7 +67,21 @@ void generateMaze()
                 maze[y][x].rightWall = false;
                 maze[nextY][nextX].leftWall = false;
             }
-            // ... (handle other directions)
+            else if (nextX == x - 1)
+            {
+                maze[y][x].leftWall = false;
+                maze[nextY][nextX].rightWall = false;
+            }
+            else if (nextY == y + 1)
+            {
+                maze[y][x].bottomWall = false;
+                maze[nextY][nextX].topWall = false;
+            }
+            else if (nextY == y - 1)
+            {
+                maze[y][x].topWall = false;
+                maze[nextY][nextX].bottomWall = false;
+            }
 
             maze[nextY][nextX].visited = true;
             stack.push({nextX, nextY});
@@ -68,6 +92,7 @@ void generateMaze()
         }
     }
 }
+
 void drawMaze(VirtualDisplay *display)
 {
     for (int y = 0; y < mazeHeight; y++)
@@ -105,8 +130,8 @@ void setupMaze()
 {
 
     // Define the size of the maze
-    mazeWidth = mazeTFT->width() / cellSize;   // Number of cells horizontally
-    mazeHeight = mazeTFT->height() / cellSize; // Number of cells vertically
+    mazeWidth = (mazeTFT->width() / cellSize) | 1;   // Ensure odd number
+    mazeHeight = (mazeTFT->height() / cellSize) | 1; // Ensure odd number
 
     // Allocate memory for the maze grid
     maze.resize(mazeHeight, std::vector<Cell>(mazeWidth));
