@@ -6,15 +6,15 @@ int gridWidth;  // Width of the grid
 int gridHeight; // Height of the grid
 bool **currentGrid;
 bool **nextGrid;
-const int squareSize = 10; 
+const int squareSize = 10;
+const int statsWidth = 75; // Width of the stats area on the left, adjust as needed
 
 VirtualDisplay *gameTFT;
 
 void setupGameOfLife()
 {
-    gridWidth = gameTFT->width() / squareSize; // Number of squares horizontally
-    gridHeight = gameTFT->height() / squareSize; // Number of squares vertically
-
+    gridWidth = (gameTFT->width() - statsWidth) / squareSize; // Adjusted for stats area
+    gridHeight = gameTFT->height() / squareSize;
 
     // Allocate memory for the grids
     currentGrid = new bool *[gridHeight];
@@ -104,12 +104,24 @@ void drawGameOfLife()
         for (int x = 0; x < gridWidth; x++)
         {
             uint16_t color = currentGrid[y][x] ? TFT_WHITE : TFT_BLACK;
-            gameTFT->fillRect(x * squareSize, y * squareSize, squareSize, squareSize, color);
+            gameTFT->fillRect(x * squareSize + statsWidth, y * squareSize, squareSize, squareSize, color);
         }
     }
     gameTFT->output();
 }
 
+void drawStats(int generation)
+{
+    // Clear the stats area
+    gameTFT->fillRect(0, 0, statsWidth, gameTFT->height(), TFT_BLACK);
+
+    // Display the generation count
+    gameTFT->setTextColor(TFT_WHITE);
+    gameTFT->setTextSize(2);
+    gameTFT->setCursor(5, 5); // Adjust text position as needed
+    gameTFT->print("Gen:");
+    gameTFT->print(generation);
+}
 
 void test_gameOfLife(VirtualDisplay *tft)
 {
@@ -120,7 +132,9 @@ void test_gameOfLife(VirtualDisplay *tft)
     {                       // Run for 1000 generations
         updateGameOfLife(); // Update the grid
         drawGameOfLife();   // Draw the grid
-        delay(100);         // Delay between generations
+        drawStats(i);       // Draw the stats with the current generation
+
+        delay(100); // Delay between generations
     }
     cleanupGameOfLife(); // Clean up the dynamically allocated memory
 }

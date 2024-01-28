@@ -50,8 +50,8 @@ void setup()
     // test_animation();
     // test_images();
     // test_pong();
-    // test_gameOfLife(tft);
-    test_maze(tft);
+    test_gameOfLife(tft);
+    // test_maze(tft);
 }
 
 void loop()
