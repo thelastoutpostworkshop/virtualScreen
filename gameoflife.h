@@ -2,14 +2,17 @@
 #include "virtualScreen.h"
 #endif
 
+#include "fonts/BebasNeue_Regular13pt7b.h"
+
 int gridWidth;  // Width of the grid
 int gridHeight; // Height of the grid
 bool **currentGrid;
 bool **nextGrid;
 const int squareSize = 10;
-const int statsWidth = 175; // Width of the stats area on the left, adjust as needed
+const int statsWidth = 240; // Width of the stats area on the left, adjust as needed
 int aliveCellsCount = 0;
 int changeRate = 0;
+const uint16_t statsBgColor = 0x3186;
 std::vector<int> populationHistory;
 
 VirtualDisplay *gameTFT;
@@ -139,11 +142,11 @@ void drawPopulationGraph()
     int titleHeight = 15;                              // Height for the title area
 
     // Clear the area for the graph and title
-    gameTFT->fillRect(graphX, graphY - titleHeight, graphWidth, graphHeight + titleHeight, TFT_BLACK);
+    gameTFT->fillRect(graphX, graphY - titleHeight, graphWidth, graphHeight + titleHeight, statsBgColor);
 
     // Draw the title for the graph
     gameTFT->setTextColor(TFT_WHITE);
-    gameTFT->setCursor(graphX, graphY - titleHeight); // Set position for the title
+    gameTFT->setCursor(8, graphY - titleHeight); // Set position for the title
     gameTFT->print("Population Over Time");
 
     // Check if there is enough data to draw the graph
@@ -170,19 +173,19 @@ void drawPopulationGraph()
 void drawStats(int generation)
 {
     // Clear the stats area
-    gameTFT->fillRect(0, 0, statsWidth, gameTFT->height(), TFT_BLACK);
+    gameTFT->fillRect(0, 0, statsWidth, gameTFT->height(), statsBgColor);
 
     // Display the generation count
     gameTFT->setTextColor(TFT_WHITE);
-    gameTFT->setTextSize(2);
-    gameTFT->setCursor(5, 5); // Adjust text position as needed
+    gameTFT->setFont(&BebasNeue_Regular13pt7b);
+    gameTFT->setCursor(8, 25); // Adjust text position as needed
     gameTFT->print("Gen:");
     gameTFT->print(generation);
     gameTFT->setTextColor(TFT_WHITE);
-    gameTFT->setCursor(5, 25); // Adjust position as needed
+    gameTFT->setCursor(8, 55); // Adjust position as needed
     gameTFT->print("Alive: ");
     gameTFT->print(aliveCellsCount);
-    gameTFT->setCursor(5, 45); // Adjust for next stat position
+    gameTFT->setCursor(8, 85); // Adjust for next stat position
     gameTFT->print("Change: ");
     gameTFT->print(changeRate);
 }
