@@ -8,6 +8,8 @@
 #include <Fonts/GFXFF/FreeSansBold24pt7b.h>
 #include "fonts/Aurebesh_Bold32pt7b.h"
 #include "fonts/Bombing40pt7b.h"
+
+#include "gameoflife.h"
 #define test_image highway
 
 #define TFT_MISO 12
@@ -86,6 +88,7 @@ void setup()
     // test_animation();
     // test_images();
     test_pong();
+    // test_gameOfLife(tft);
 #endif
 }
 

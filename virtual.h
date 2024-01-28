@@ -1,5 +1,8 @@
 #include <Adafruit_GFX.h>
 
+#ifndef _VIRTUAL_SCREEN_
+#define _VIRTUAL_SCREEN_
+
 #define pixelSize 2 // Pixel Size in bytes
 
 typedef void (*CallbackFunction)();
@@ -101,3 +104,5 @@ public:
         // }
     }
 };
+
+#endif
