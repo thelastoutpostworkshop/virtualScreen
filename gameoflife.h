@@ -82,7 +82,7 @@ void drawGameOfLife()
             gameTFT->drawPixel(x, y, currentGrid[y][x] ? TFT_WHITE : TFT_BLACK);
         }
     }
-    output();
+    gameTFT->output();
 }
 
 void test_gameOfLife(VirtualDisplay *tft)

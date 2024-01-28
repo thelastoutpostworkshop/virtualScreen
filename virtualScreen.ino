@@ -18,41 +18,6 @@
 #define TFT_DC 2
 #define TFT_RST 4
 
-// Tests, uncomment one line only
-#define FourScreensOneRow
-
-TFT_eSPI display = TFT_eSPI();
-
-typedef struct
-{
-    int row;
-    int column;
-    int cs;
-    int rotation;
-} Screen;
-
-int virtualWidth = 0;
-int virtualHeight = 0;
-int displayWidth = 0;
-int displayHeight = 0;
-
-#ifdef FourScreensOneRow
-#define ROWS 1    // Number of rows
-#define COLUMNS 4 // Number of columns
-Screen grid[ROWS][COLUMNS] = {
-    {{.row = 0, .column = 0, .cs = 16, .rotation = 0},
-     {.row = 0, .column = 1, .cs = 15, .rotation = 0},
-     {.row = 0, .column = 2, .cs = 6, .rotation = 0},
-     {.row = 0, .column = 3, .cs = 7, .rotation = 0}}};
-#endif
-
-// Screen grid[ROWS][COLUMNS] = {
-//     {{.row = 0, .column = 0, .cs = 7, .rotation = 2},
-//      {.row = 0, .column = 1, .cs = 6, .rotation = 2},
-//      {.row = 0, .column = 2, .cs = 15, .rotation = 2}},
-//     {{.row = 1, .column = 0, .cs = 16, .rotation = 0},
-//      {.row = 1, .column = 1, .cs = 11, .rotation = 0},
-//      {.row = 1, .column = 2, .cs = 9, .rotation = 0}}};
 
 VirtualDisplay *tft;
 
@@ -69,11 +34,13 @@ void setup()
         Serial.println("No PSRAM!");
         return;
     }
-    initDisplay();
 
-    calculateVirtualScreenSize();
+    ScreenBuilder builder;
+    builder.addRow({{16, 0}, {15, 0},{6,0},{7,0}})
+        .build();
 
-    tft = new VirtualDisplay(virtualWidth, virtualHeight, displayWidth, displayHeight);
+    tft = new VirtualDisplay(builder.width(),builder.height(),&builder);
+    tft->begin();
 
     Serial.printf("PSRAM Left = %lu\n", ESP.getFreePsram());
 
@@ -82,32 +49,32 @@ void setup()
         Serial.println("Memory Allocation for virtual screen failed");
         return;
     }
-#ifdef FourScreensOneRow
     // test_2();
     // delay(5000);
     // test_animation();
-    // test_images();
-    test_pong();
+    test_images();
+    // test_pong();
     // test_gameOfLife(tft);
-#endif
 }
 
 void loop()
 {
 }
 
-void test_pong() {
+void test_pong()
+{
     const int paddleWidth = 20;
     const int paddleHeight = 50;
     const int ballSize = 8;
-    int ballX, ballY;                         // Ball position
+    int ballX, ballY;                           // Ball position
     int ballVelocityX = 12, ballVelocityY = 12; // Ball velocity
-    int leftPaddleY, rightPaddleY;            // Paddle positions
+    int leftPaddleY, rightPaddleY;              // Paddle positions
     ballX = tft->width() / 2;
     ballY = tft->height() / 2;
     leftPaddleY = rightPaddleY = (tft->height() - paddleHeight) / 2;
     tft->fillScreen(TFT_BLACK); // Clear the screen
-    for (int i = 0; i < 1000; i++) {
+    for (int i = 0; i < 1000; i++)
+    {
         tft->fillRect(0, leftPaddleY, paddleWidth, paddleHeight, TFT_BLACK);                           // Left paddle
         tft->fillRect(tft->width() - paddleWidth, rightPaddleY, paddleWidth, paddleHeight, TFT_BLACK); // Right paddle
         tft->fillCircle(ballX, ballY, ballSize, TFT_BLACK);
@@ -117,7 +84,8 @@ void test_pong() {
         ballY += ballVelocityY;
 
         // Check for ball collisions with the top and bottom of the screen
-        if (ballY <= 0 || ballY >= tft->height() - ballSize) {
+        if (ballY <= 0 || ballY >= tft->height() - ballSize)
+        {
             ballVelocityY = -ballVelocityY;
         }
 
@@ -131,7 +99,8 @@ void test_pong() {
 
         // Check for ball collisions with the paddles
         if ((ballX <= paddleWidth && ballY >= leftPaddleY && ballY <= leftPaddleY + paddleHeight) ||
-            (ballX >= tft->width() - paddleWidth - ballSize && ballY >= rightPaddleY && ballY <= rightPaddleY + paddleHeight)) {
+            (ballX >= tft->width() - paddleWidth - ballSize && ballY >= rightPaddleY && ballY <= rightPaddleY + paddleHeight))
+        {
             ballVelocityX = -ballVelocityX;
 
             // Randomize the ball's Y velocity slightly to change its direction
@@ -142,18 +111,17 @@ void test_pong() {
         tft->fillRect(0, leftPaddleY, paddleWidth, paddleHeight, 0xf818);                           // Left paddle
         tft->fillRect(tft->width() - paddleWidth, rightPaddleY, paddleWidth, paddleHeight, 0x07e6); // Right paddle
         tft->fillCircle(ballX, ballY, ballSize, 0xe7e0);                                            // Ball
-        output();
+        tft->output();
     }
 }
-
 
 void test_images()
 {
     tft->drawRGBBitmap(0, 0, (uint16_t *)newyork, newyork_width, newyork_height);
-    output();
+    tft->output();
     delay(5000);
     tft->drawRGBBitmap(0, 0, (uint16_t *)night_earth, night_earth_width, night_earth_height);
-    output();
+    tft->output();
 }
 
 void test_1()
@@ -163,16 +131,16 @@ void test_1()
     tft->setTextColor(TFT_CYAN);
     tft->setCursor(10, 75);
     tft->println("This a test on a large screen, resolution is 720 x 480 pixels!  You can use any AdafruitGFX functions on the virtual Screen.");
-    output();
+    tft->output();
 }
 void test_2()
 {
     tft->fillScreen(TFT_BLACK);
-    tft->drawRect(10, 20, virtualWidth - 50, virtualHeight - 50, TFT_GREEN);
-    tft->drawRect(12, 23, virtualWidth - 48, virtualHeight - 48, TFT_GREEN);
-    tft->drawRoundRect(20, 50, virtualWidth - 80, virtualHeight - 100, 20, TFT_CYAN);
+    tft->drawRect(10, 20, tft->width() - 50, tft->height() - 50, TFT_GREEN);
+    tft->drawRect(12, 23,  tft->width() - 48, tft->height() - 48, TFT_GREEN);
+    tft->drawRoundRect(20, 50,  tft->width() - 80, tft->height() - 100, 20, TFT_CYAN);
     printCenteredText("Welcome to Virtual Screens!", &Bombing40pt7b, 0x00ff0c);
-    output();
+    tft->output();
 }
 
 void test_animation()
@@ -213,7 +181,7 @@ void test_animation()
         // Draw the new ball
         tft->fillCircle(ballX, ballY, ballSize, ballColor);
         // Assuming output() is a function to update the display
-        output();
+        tft->output();
     }
 }
 
@@ -245,84 +213,4 @@ void printCenteredText(const String &text, const GFXfont *font, uint16_t color)
     tft->println(text);
 }
 
-void initDisplay()
-{
-    displayWidth = display.width();
-    displayHeight = display.height();
-    display.begin();
-    display.setSwapBytes(true);
-    for (int i = 0; i < ROWS; i++)
-    {
-        for (int j = 0; j < COLUMNS; j++)
-        {
-            pinMode(grid[i][j].cs, OUTPUT);
-            digitalWrite(grid[i][j].cs, HIGH);
-        }
-        for (int j = 0; j < COLUMNS; ++j)
-        {
-            digitalWrite(grid[i][j].cs, LOW);
-            display.setRotation(grid[i][j].rotation);
-            digitalWrite(grid[i][j].cs, HIGH);
-        }
-    }
-}
-void calculateVirtualScreenSize()
-{
-    for (int i = 0; i < ROWS; i++)
-    {
-        for (int j = 0; j < COLUMNS; j++)
-        {
-            if (i == 0)
-            { // Add widths for the first row
-                virtualWidth += display.width();
-            }
-            if (j == 0)
-            { // Add heights for the first column
-                virtualHeight += display.height();
-            }
-        }
-    }
 
-    Serial.print("Total Width: ");
-    Serial.print(virtualWidth);
-    Serial.print(", Total Height: ");
-    Serial.println(virtualHeight);
-}
-
-void output()
-{
-    for (int row = 0; row < ROWS; row++)
-    {
-        for (int col = 0; col < COLUMNS; col++)
-        {
-            Screen &currentScreen = grid[row][col];
-            uint16_t *screenImage = getScreenImage(currentScreen);
-            digitalWrite(currentScreen.cs, LOW);
-            display.pushImage(0, 0, displayWidth, displayHeight, screenImage);
-            digitalWrite(currentScreen.cs, HIGH);
-        }
-    }
-}
-
-uint16_t *getScreenImage(const Screen &screen)
-{
-    // Allocate memory for the screen image
-    uint16_t *screenImage = tft->getDisplayBuffer();
-
-    // Calculate the starting position of the screen in the buffer
-    uint32_t position = (screen.row * displayHeight * virtualWidth) + (screen.column * displayWidth);
-
-    uint16_t *buffer = (uint16_t *)tft->getCanvas();
-    uint16_t *startPos = buffer + position;
-
-    // Copy the screen image from the buffer
-    for (int y = 0; y < displayHeight; ++y)
-    {
-        for (int x = 0; x < displayWidth; ++x)
-        {
-            screenImage[y * displayWidth + x] = startPos[y * virtualWidth + x];
-        }
-    }
-
-    return screenImage;
-}
