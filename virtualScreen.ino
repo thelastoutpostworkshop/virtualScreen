@@ -45,12 +45,13 @@ void setup()
         Serial.println("Memory Allocation for virtual screen failed");
         return;
     }
-    // test_2();
-    // delay(5000);
+
+    // Demonstrations
+    //
     // test_animation();
     // test_images();
     // test_pong();
-    test_gameOfLife(tft);
+    gameOfLife(tft);
     // test_maze(tft);
 }
 

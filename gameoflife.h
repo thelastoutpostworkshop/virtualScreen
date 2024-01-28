@@ -13,9 +13,7 @@ int changeRate = 0;
 const uint16_t statsBgColor = 0x3186;
 std::vector<int> populationHistory;
 
-VirtualDisplay *gameTFT;
-
-void setupGameOfLife()
+void setupGameOfLife(VirtualDisplay *gameTFT)
 {
     gridWidth = (gameTFT->width() - statsWidth) / squareSize; // Adjusted for stats area
     gridHeight = gameTFT->height() / squareSize;
@@ -119,7 +117,7 @@ void updateGameOfLife()
     changeRate = newChangeRate;
 }
 
-void drawGameOfLife()
+void drawGameOfLife(VirtualDisplay *gameTFT)
 {
     for (int y = 0; y < gridHeight; y++)
     {
@@ -131,7 +129,7 @@ void drawGameOfLife()
     }
     gameTFT->output();
 }
-void drawPopulationGraph()
+void drawPopulationGraph(VirtualDisplay *gameTFT)
 {
     int graphWidth = statsWidth - 10;                  // Width of the graph, leaving some margin
     int graphHeight = 50;                              // Height of the graph, adjust as needed
@@ -168,7 +166,7 @@ void drawPopulationGraph()
 }
 
 
-void drawStats(int generation)
+void drawStats(int generation,VirtualDisplay *gameTFT)
 {
     // Clear the stats area
     gameTFT->fillRect(0, 0, statsWidth, gameTFT->height(), statsBgColor);
@@ -188,17 +186,16 @@ void drawStats(int generation)
     gameTFT->print(changeRate);
 }
 
-void test_gameOfLife(VirtualDisplay *tft)
+void gameOfLife(VirtualDisplay *tft)
 {
-    gameTFT = tft;
-    gameTFT->fillScreen(TFT_BLACK);
-    setupGameOfLife(); // Initialize the game
+    tft->fillScreen(TFT_BLACK);
+    setupGameOfLife(tft); // Initialize the game
     for (int i = 0; i < 1000; i++)
     {                       // Run for 1000 generations
         updateGameOfLife(); // Update the grid
-        drawGameOfLife();   // Draw the grid
-        drawStats(i);       // Draw the stats with the current generation
-        drawPopulationGraph();
+        drawGameOfLife(tft);   // Draw the grid
+        drawStats(i,tft);       // Draw the stats with the current generation
+        drawPopulationGraph(tft);
 
         delay(100); // Delay between generations
     }
