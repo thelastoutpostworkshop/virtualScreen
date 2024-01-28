@@ -191,6 +191,7 @@ void drawMaze(VirtualDisplay *display, const std::vector<std::pair<int, int>> &p
 
         // Draw line from the center of the current cell to the center of the next cell
         display->drawLine(x0, y0, x1, y1, TFT_YELLOW);
+        display->output();
     }
     if (!path.empty())
     {
@@ -201,7 +202,7 @@ void drawMaze(VirtualDisplay *display, const std::vector<std::pair<int, int>> &p
 
         // Draw a yellow circle at the end of the path
         int radius = cellSize / 4; // Radius of the circle
-        display->drawCircle(centerX, centerY, radius, TFT_YELLOW);
+        display->fillCircle(centerX, centerY, radius, TFT_YELLOW);
     }
 
     display->output();
