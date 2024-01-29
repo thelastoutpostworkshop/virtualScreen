@@ -1,6 +1,8 @@
 #include "virtualScreen.h"
 #include "fonts/Starjedi32pt7b.h"
 #include "fonts/raidercrusader48pt7b.h"
+#include "fonts/Star_Trek_Enterprise_Future80pt7b.h"
+
 void printCenteredText(VirtualDisplay *tft, const String &text, const GFXfont *font, uint16_t color)
 {
 
@@ -29,5 +31,9 @@ void font_test(VirtualDisplay *tft)
     delay(5000);
     tft->fillScreen(TFT_BLACK);
     printCenteredText(tft, "We are Crusaders!", &raidercrusader48pt7b, 0x17bb);
+    tft->output();
+    delay(5000);
+    tft->fillScreen(TFT_BLACK);
+    printCenteredText(tft, "Star Trek Kirk", &Star_Trek_Enterprise_Future80pt7b, 0x3728);
     tft->output();
 }
