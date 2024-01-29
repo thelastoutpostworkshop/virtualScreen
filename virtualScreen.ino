@@ -12,6 +12,7 @@
 #include "gameoflife.h"
 #include "maze.h"
 #include "playPong.h"
+#include "font_test.h"
 #define test_image highway
 
 #define TFT_MISO 12
@@ -52,9 +53,10 @@ void setup()
 
     // test_animation();
     // test_images();
-    playPong(tft);
+    // playPong(tft);
     // gameOfLife(tft);
     // solveMaze(tft);
+    font_test(tft);
 }
 
 void loop()
@@ -70,67 +72,6 @@ void test_images()
     tft->output();
 }
 
-void test_1()
-{
-    tft->fillScreen(TFT_BLACK);
-    tft->setFont(&FreeSansBold24pt7b);
-    tft->setTextColor(TFT_CYAN);
-    tft->setCursor(10, 75);
-    tft->println("This a test on a large screen, resolution is 720 x 480 pixels!  You can use any AdafruitGFX functions on the virtual Screen.");
-    tft->output();
-}
-void test_2()
-{
-    tft->fillScreen(TFT_BLACK);
-    tft->drawRect(10, 20, tft->width() - 50, tft->height() - 50, TFT_GREEN);
-    tft->drawRect(12, 23, tft->width() - 48, tft->height() - 48, TFT_GREEN);
-    tft->drawRoundRect(20, 50, tft->width() - 80, tft->height() - 100, 20, TFT_CYAN);
-    printCenteredText("Welcome to Virtual Screens!", &Bombing40pt7b, 0x00ff0c);
-    tft->output();
-}
-
-void test_animation()
-{
-    int ballX = 30;               // Initial X position
-    int ballY = 30;               // Initial Y position
-    int ballSize = 50;            // Diameter of the ball
-    int velocityX = 8;            // X Velocity
-    int velocityY = 8;            // Y Velocity
-    uint16_t ballColor = TFT_RED; // Start with red color
-
-    tft->fillScreen(TFT_BLACK); // Clear the screen
-
-    for (int i = 0; i < 1000; i++)
-    {
-        tft->fillCircle(ballX, ballY, ballSize, TFT_BLACK);
-
-        // Update the ball's position
-        ballX += velocityX;
-        ballY += velocityY;
-
-        // Check for collisions with the screen edges
-        if (ballX <= 0 || ballX >= tft->width() - ballSize || ballY <= 0 || ballY >= tft->height() - ballSize)
-        {
-            if (ballX <= 0 || ballX >= tft->width() - ballSize)
-            {
-                velocityX = -velocityX; // Reverse X direction
-            }
-            if (ballY <= 0 || ballY >= tft->height() - ballSize)
-            {
-                velocityY = -velocityY; // Reverse Y direction
-            }
-
-            // Change the ball color on collision
-            ballColor = getRandomColor();
-        }
-
-        // Draw the new ball
-        tft->fillCircle(ballX, ballY, ballSize, ballColor);
-        // Assuming output() is a function to update the display
-        tft->output();
-    }
-}
-
 uint16_t getRandomColor()
 {
     // Generate random values for red (5 bits), green (6 bits), and blue (5 bits)
@@ -142,19 +83,3 @@ uint16_t getRandomColor()
     return (red << 11) | (green << 5) | blue;
 }
 
-void printCenteredText(const String &text, const GFXfont *font, uint16_t color)
-{
-
-    tft->setFont(font);
-    tft->setTextColor(color);
-
-    int16_t x1, y1;
-    uint16_t w, h;
-    tft->getTextBounds(text, 0, 0, &x1, &y1, &w, &h); // Calculate the bounds of the text
-
-    int x = (tft->width() - w) / 2;  // Calculate the x position to center the text
-    int y = (tft->height() + h) / 2; // Center vertically
-
-    tft->setCursor(x, y);
-    tft->println(text);
-}
