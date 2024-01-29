@@ -27,8 +27,7 @@ void drawMessage(VirtualDisplay *tft, const String &message)
 
     // Set text properties and display the message
     tft->setTextColor(TFT_WHITE);
-    tft->setTextSize(1); // Adjust size as needed
-    tft->setCursor(5, 5);
+    tft->setCursor(55, 125);
     tft->print(message);
 }
 
