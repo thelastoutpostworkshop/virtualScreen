@@ -2,18 +2,11 @@
 #include <Adafruit_GFX.h>
 #include <TFT_eSPI.h>
 
-#include "images/newyork_960x240.h"
-#include "images/highway_720x480.h"
-#include "images/night_earth_960x240.h"
-#include <Fonts/GFXFF/FreeSansBold24pt7b.h>
-#include "fonts/Aurebesh_Bold32pt7b.h"
-#include "fonts/Bombing40pt7b.h"
-
 #include "gameoflife.h"
 #include "maze.h"
 #include "playPong.h"
 #include "font_test.h"
-#define test_image highway
+#include "image_test.h"
 
 #define TFT_MISO 12
 #define TFT_MOSI 13
@@ -56,30 +49,11 @@ void setup()
     // playPong(tft);
     // gameOfLife(tft);
     // solveMaze(tft);
-    font_test(tft);
+    // font_test(tft);
+    image_test(tft);
 }
 
 void loop()
 {
-}
-
-void test_images()
-{
-    tft->drawRGBBitmap(0, 0, (uint16_t *)newyork, newyork_width, newyork_height);
-    tft->output();
-    delay(5000);
-    tft->drawRGBBitmap(0, 0, (uint16_t *)night_earth, night_earth_width, night_earth_height);
-    tft->output();
-}
-
-uint16_t getRandomColor()
-{
-    // Generate random values for red (5 bits), green (6 bits), and blue (5 bits)
-    uint8_t red = random(0, 32);   // 0 to 31
-    uint8_t green = random(0, 64); // 0 to 63
-    uint8_t blue = random(0, 32);  // 0 to 31
-
-    // Combine them into one 16-bit color in RGB565 format
-    return (red << 11) | (green << 5) | blue;
 }
 
