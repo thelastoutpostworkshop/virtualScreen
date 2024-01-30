@@ -174,6 +174,7 @@ void drawGrid(VirtualDisplay *display)
             }
             else
             {
+                display->fillRect(drawX, drawY, blockSize, blockSize, TFT_BLACK);
                 display->drawRect(drawX, drawY, blockSize, blockSize, 0x4a89);
             }
         }
