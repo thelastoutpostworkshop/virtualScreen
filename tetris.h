@@ -120,7 +120,7 @@ bool canPlace(int x, int y, int shape[4][4])
                 int newY = y + i; // newY represents horizontal movement
 
                 // Check for out-of-bounds or collision with existing blocks
-                if (newX < 0 || newX >= tetrisWidth || newY < 0 || newY >= tetrisHeight || grid[newX][newY])
+                if (newX < 0 || newX >= tetrisWidth || newY < 0 || newY >= tetrisHeight)
                 {
                     return false;
                 }
@@ -131,7 +131,7 @@ bool canPlace(int x, int y, int shape[4][4])
 }
 
 // Place the tetromino on the grid
-void placeTetromino(int x, int y)
+void placeTetromino()
 {
     for (int i = 0; i < 4; i++)
     {
@@ -139,8 +139,8 @@ void placeTetromino(int x, int y)
         {
             if (currentTetromino.shape[i][j])
             {
-                int newX = x + j;  // Calculate the correct x position
-                int newY = y + i;  // Calculate the correct y position
+                int newX = currentTetromino.x + j; // Calculate the correct x position
+                int newY = currentTetromino.y + i; // Calculate the correct y position
 
                 // Check if the calculated position is within the bounds of the grid
                 if (newX >= 0 && newX < tetrisWidth && newY >= 0 && newY < tetrisHeight)
@@ -149,7 +149,6 @@ void placeTetromino(int x, int y)
         }
     }
 }
-
 
 void setupTetris(VirtualDisplay *display)
 {
@@ -181,26 +180,48 @@ void drawGrid(VirtualDisplay *display)
     }
 }
 
+void clearTetrominoPosition()
+{
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            if (currentTetromino.shape[i][j])
+            {
+                int newX = currentTetromino.x + j;
+                int newY = currentTetromino.y + i;
+
+                if (newX >= 0 && newX < tetrisWidth && newY >= 0 && newY < tetrisHeight)
+                {
+                    grid[newX][newY] = 0; // Clear the cell
+                }
+            }
+        }
+    }
+}
+
 void playTetris(VirtualDisplay *display)
 {
     setupTetris(display);
 
     while (true)
     {
-        // Attempt to move the tetromino down by incrementing its x position
-        // if (canPlace(currentTetromino.x + 1, currentTetromino.y, currentTetromino.shape))
-        // {
-        //     currentTetromino.x++;
-        // }
-        // else
-        // {
-        //     // If the tetromino cannot move down, place it on the grid
-        //     placeTetromino();
-        //     // clearLines(); // Call the line-clearing function
-        //     spawnTetromino(); // Spawn a new tetromino
-        // }
+        clearTetrominoPosition();
 
-        placeTetromino(0, 0);
+        // Attempt to move the tetromino down by incrementing its x position
+        if (canPlace(currentTetromino.x + 1, currentTetromino.y, currentTetromino.shape))
+        {
+            currentTetromino.x++;
+        }
+        else
+        {
+            // If the tetromino cannot move down, place it on the grid
+            placeTetromino();
+            // clearLines(); // Call the line-clearing function
+            spawnTetromino(); // Spawn a new tetromino
+        }
+
+        placeTetromino();
         // Draw the grid and current tetromino
         drawGrid(display);
 
