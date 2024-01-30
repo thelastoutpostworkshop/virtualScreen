@@ -100,11 +100,15 @@ void clearLines()
 // Initialize a new tetromino at the top of the grid
 void spawnTetromino()
 {
-    int shapeIndex = random(0, 7); // Random index for shape
+    int shapeIndex = esp_random() % 7; // Random index for shape
     memcpy(currentTetromino.shape, tetrominoes[shapeIndex], sizeof(currentTetromino.shape));
-    currentTetromino.x = 0;                    // Start from the left side (which is now the top)
-    currentTetromino.y = tetrisHeight / 2 - 2; // Centered horizontally
-    currentTetromino.color = TFT_CYAN;         // Random color
+    currentTetromino.x = 0; // Start from the left side (which is now the top)
+
+    // Choose a random y position within the grid's width
+    // Subtract 4 to ensure the entire tetromino shape fits within the grid
+    currentTetromino.y = esp_random() % (tetrisHeight - 4);
+
+    currentTetromino.color = TFT_CYAN; // Random color
 }
 
 // Check if the tetromino can be placed at a position in the grid
@@ -120,7 +124,7 @@ bool canPlace(int x, int y, int shape[4][4])
                 int newY = y + i; // newY represents horizontal movement
 
                 // Check for out-of-bounds or collision with existing blocks
-                if (newX < 0 || newX >= tetrisWidth || newY < 0 || newY >= tetrisHeight)
+                if (newX < 0 || newX >= tetrisWidth || newY < 0 || newY >= tetrisHeight || grid[newX][newY])
                 {
                     return false;
                 }
