@@ -5,6 +5,7 @@
 #include "gameoflife.h"
 #include "maze.h"
 #include "playPong.h"
+#include "tetris.h"
 #include "font_test.h"
 #include "image_test.h"
 
@@ -50,7 +51,8 @@ void setup()
     // gameOfLife(tft);
     // solveMaze(tft);
     // font_test(tft);
-    image_test(tft);
+    // image_test(tft);
+    playTetris(tft);
 }
 
 void loop()
