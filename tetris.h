@@ -43,6 +43,17 @@ const int L[4][4] = {
     {0, 0, 0, 0},
     {0, 0, 0, 0}};
 
+// Define colors for each tetromino shape
+const uint16_t tetrominoColors[7] = {
+    TFT_RED,    // Color for shape I
+    TFT_GREEN,  // Color for shape O
+    TFT_BLUE,   // Color for shape T
+    TFT_YELLOW, // Color for shape S
+    TFT_PURPLE, // Color for shape Z
+    TFT_ORANGE, // Color for shape J
+    TFT_CYAN    // Color for shape L
+};
+
 const int blockSize = 20; // Size of each Tetris block in pixels
 
 const int (*tetrominoes[7])[4] = {I, O, T, S, Z, J, L};
@@ -108,7 +119,7 @@ void spawnTetromino()
     // Subtract 4 to ensure the entire tetromino shape fits within the grid
     currentTetromino.y = esp_random() % (tetrisHeight - 4);
 
-    currentTetromino.color = TFT_CYAN; // Random color
+    currentTetromino.color = tetrominoColors[shapeIndex];
 }
 
 // Check if the tetromino can be placed at a position in the grid
