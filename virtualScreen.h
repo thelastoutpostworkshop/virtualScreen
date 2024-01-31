@@ -21,9 +21,11 @@ typedef struct
     int column;
     int cs;
     int rotation;
+    bool dirty;
 } Screen;
 
-class ScreenBuilder {
+class ScreenBuilder
+{
     std::vector<Screen> screens;
     int totalRows = 0;
     int maxColumns = 0;
@@ -31,11 +33,13 @@ class ScreenBuilder {
     int virtualScreenHeight = 0;
 
 public:
-    ScreenBuilder &addRow(std::initializer_list<ScreenRow> screenRows) {
+    ScreenBuilder &addRow(std::initializer_list<ScreenRow> screenRows)
+    {
         int columnCount = screenRows.size();
         maxColumns = std::max(maxColumns, columnCount);
         int column = 0;
-        for (const auto &screenRow : screenRows) {
+        for (const auto &screenRow : screenRows)
+        {
             screens.push_back({totalRows, column, screenRow.cs, screenRow.rotation});
             ++column;
         }
@@ -48,19 +52,40 @@ public:
         return *this;
     }
 
-    const std::vector<Screen> &getScreens() const {
+    std::vector<Screen> &getScreens()
+    {
         return screens;
     }
 
-    int width() const {
+    Screen *getScreen(int x, int y)
+    {
+        // Calculate which row and column the x, y coordinates fall into
+        int column = x / display.width();
+        int row = y / display.height();
+
+        // Iterate through the screens to find the matching one
+        for (auto &screen : screens)
+        {
+            if (screen.row == row && screen.column == column)
+            {
+                return &screen; // Return the address of the screen
+            }
+        }
+
+        // If no matching screen is found, return a null pointer
+        return nullptr;
+    }
+
+    int width() const
+    {
         return virtualScreenWidth;
     }
 
-    int height() const {
+    int height() const
+    {
         return virtualScreenHeight;
     }
 };
-
 
 class VirtualDisplay : public Adafruit_GFX
 {
@@ -99,7 +124,17 @@ private:
         return displayBuffer;
     }
 
-    void initPhysicalScreens() {
+    void clearDirtyFlag()
+    {
+        auto &screens = screenBuilder->getScreens();
+
+        for (auto &screen : screens)
+        {
+            screen.dirty = false;
+        }
+    }
+    void initPhysicalScreens()
+    {
         display.begin();
         display.setSwapBytes(true);
         const auto &screens = screenBuilder->getScreens();
@@ -115,6 +150,7 @@ private:
             display.setRotation(screen.rotation);
             digitalWrite(screen.cs, HIGH);
         }
+        clearDirtyFlag();
     }
 
 public:
@@ -139,8 +175,8 @@ public:
     bool begin()
     {
         initPhysicalScreens();
-        Serial.printf("Virtual Screen Width=%d\n",_width);
-        Serial.printf("Virtual Screen Height=%d\n",_height);
+        Serial.printf("Virtual Screen Width=%d\n", _width);
+        Serial.printf("Virtual Screen Height=%d\n", _height);
         return _ready;
     }
 
@@ -150,11 +186,15 @@ public:
 
         for (const auto &screen : screens)
         {
-            uint16_t *screenImage = getScreenImage(screen);
-            digitalWrite(screen.cs, LOW);
-            display.pushImage(0, 0, display.width(), display.height(), screenImage);
-            digitalWrite(screen.cs, HIGH);
+            if (screen.dirty)
+            {
+                uint16_t *screenImage = getScreenImage(screen);
+                digitalWrite(screen.cs, LOW);
+                display.pushImage(0, 0, display.width(), display.height(), screenImage);
+                digitalWrite(screen.cs, HIGH);
+            }
         }
+        clearDirtyFlag();
     }
 
     ~VirtualDisplay()
@@ -179,6 +219,13 @@ public:
         if ((x < 0) || (y < 0) || (x >= _width) || (y >= _height))
         {
             return;
+        }
+
+        Screen *screen = screenBuilder->getScreen(x, y);
+
+        if (screen)
+        {
+            screen->dirty = true;
         }
 
         canvas[y * _width + x] = color;

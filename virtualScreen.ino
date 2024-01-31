@@ -52,7 +52,7 @@ void setup()
     // solveMaze(tft);
     // font_test(tft);
     // image_test(tft);
-    playTetris(tft);
+    // playTetris(tft);
 }
 
 void loop()
