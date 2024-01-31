@@ -186,15 +186,13 @@ public:
 
         for (const auto &screen : screens)
         {
-            if (screen.dirty)
-            {
-                uint16_t *screenImage = getScreenImage(screen);
-                digitalWrite(screen.cs, LOW);
-                display.pushImage(0, 0, display.width(), display.height(), screenImage);
-                digitalWrite(screen.cs, HIGH);
-            }
+
+            uint16_t *screenImage = getScreenImage(screen);
+            digitalWrite(screen.cs, LOW);
+            display.pushImage(0, 0, display.width(), display.height(), screenImage);
+            digitalWrite(screen.cs, HIGH);
         }
-        clearDirtyFlag();
+        // clearDirtyFlag();
     }
 
     ~VirtualDisplay()
@@ -221,12 +219,12 @@ public:
             return;
         }
 
-        Screen *screen = screenBuilder->getScreen(x, y);
+        // Screen *screen = screenBuilder->getScreen(x, y);
 
-        if (screen)
-        {
-            screen->dirty = true;
-        }
+        // if (screen)
+        // {
+        //     screen->dirty = true;
+        // }
 
         canvas[y * _width + x] = color;
     }

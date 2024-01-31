@@ -45,14 +45,13 @@ void setup()
     // Demonstrations
     //
 
-    // test_animation();
     // test_images();
     // playPong(tft);
     // gameOfLife(tft);
     // solveMaze(tft);
     // font_test(tft);
     // image_test(tft);
-    // playTetris(tft);
+    playTetris(tft);
 }
 
 void loop()
