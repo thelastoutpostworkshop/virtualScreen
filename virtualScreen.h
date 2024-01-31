@@ -181,23 +181,15 @@ public:
             return;
         }
 
-        // // Calculate the position in the canvas array
         canvas[y * _width + x] = color;
     }
 
     void startWrite(void) override
     {
-        // startWriteLevel++;
     }
 
     void endWrite(void) override
     {
-        // endWriteLevel++;
-        // if (startWriteLevel == endWriteLevel)
-        // {
-        //     callBackFunction();
-        //     resetWriteLevels();
-        // }
     }
 };
 
