@@ -8,7 +8,6 @@
 #include "tetris.h"
 #include "font_test.h"
 #include "image_test.h"
-#include "nostromo.h"
 
 #define TFT_MISO 12
 #define TFT_MOSI 13
@@ -62,10 +61,10 @@ void setup()
     //
 
     // playPong(tft);
-    // gameOfLife(tft);
+    gameOfLife(tft);
     // solveMaze(tft);
     // font_test(tft);
-    image_test(tft);
+    // image_test(tft);
     // playTetris(tft);
     // runNostromoSimulation(tft);
 }
