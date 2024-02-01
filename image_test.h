@@ -14,9 +14,13 @@
 // #define test_width spacebattle_width
 // #define test_height spacebattle_height
 
-#define test_image console
-#define test_width console_width
-#define test_height console_height
+// #define test_image console
+// #define test_width console_width
+// #define test_height console_height
+
+#define test_image highway
+#define test_width highway_width
+#define test_height highway_height
 
 void image_test(VirtualDisplay *tft)
 {

@@ -40,8 +40,14 @@ void setup()
     }
 
     ScreenBuilder screens;
+
+    // 4 sreens on one row
     // screens.addRow({{16, 0}, {15, 0}, {6, 0}, {7, 0}});
-    screens.addRow({{7, 2}, {6, 2}, {15, 2}, {16, 0}, {11, 0}, {9, 0}});
+
+    // 6 screens 3 on each row
+    screens.addRow({{7, 2}, {6, 2}, {15, 2}});
+    screens.addRow({{16, 0}, {11, 0}, {9, 0}});
+
     tft = new VirtualDisplay(screens.width(), screens.height(), &screens);
 
     if (!tft->begin())
@@ -58,8 +64,8 @@ void setup()
     // playPong(tft);
     // gameOfLife(tft);
     // solveMaze(tft);
-    font_test(tft);
-    // image_test(tft);
+    // font_test(tft);
+    image_test(tft);
     // playTetris(tft);
 }
 
