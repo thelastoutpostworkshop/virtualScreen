@@ -212,6 +212,43 @@ public:
         return _height;
     }
 
+    void pushImage(int16_t x, int16_t y, int16_t width, int16_t height, uint16_t *buffer)
+    {
+        if (x + width > _width || y + height > _height)
+        {
+            return;
+        }
+
+        for (int16_t i = 0; i < height; i++)
+        {
+            for (int16_t j = 0; j < width; j++)
+            {
+                int bufferIndex = i * width + j;
+
+                int canvasIndex = (y + i) * _width + (x + j);
+
+                canvas[canvasIndex] = buffer[bufferIndex];
+            }
+        }
+    }
+
+    void readRect(int16_t x, int16_t y, int16_t width, int16_t height, uint16_t *buffer)
+    {
+        if (x < 0 || y < 0 || x + width > _width || y + height > _height)
+        {
+            return;
+        }
+
+        for (int16_t row = 0; row < height; ++row)
+        {
+            for (int16_t col = 0; col < width; ++col)
+            {
+                int canvasIndex = ((y + row) * _width) + (x + col);
+                int bufferIndex = (row * width) + col;
+                buffer[bufferIndex] = canvas[canvasIndex];
+            }
+        }
+    }
     void drawPixel(int16_t x, int16_t y, uint16_t color) override
     {
         if ((x < 0) || (y < 0) || (x >= _width) || (y >= _height))

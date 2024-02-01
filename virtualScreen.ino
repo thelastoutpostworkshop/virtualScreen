@@ -8,6 +8,7 @@
 #include "tetris.h"
 #include "font_test.h"
 #include "image_test.h"
+#include "nostromo.h"
 
 #define TFT_MISO 12
 #define TFT_MOSI 13
@@ -65,8 +66,21 @@ void setup()
     // gameOfLife(tft);
     // solveMaze(tft);
     // font_test(tft);
-    image_test(tft);
+    // image_test(tft);
     // playTetris(tft);
+    runNostromoSimulation(tft);
+
+    // int scrollHeight = 8;
+    // tft->fillScreen(TFT_BLACK);
+    // tft->setTextSize(25);
+    // tft->setCursor(0,tft->height()-scrollHeight);
+    // tft->print("test");
+    // tft->output();
+    // uint16_t *buffer = new uint16_t[tft->width() * scrollHeight];
+    // tft->readRect(0, scrollHeight, tft->width(), tft->height() - scrollHeight, buffer);
+    // tft->pushImage(0, 0, tft->width(), tft->height() - scrollHeight, buffer);
+    // tft->fillRect(0, tft->height() - scrollHeight, tft->width(), scrollHeight, bgColor);
+    // delete[] buffer;
 }
 
 void loop()
