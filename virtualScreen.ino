@@ -67,20 +67,8 @@ void setup()
     // solveMaze(tft);
     // font_test(tft);
     // image_test(tft);
-    // playTetris(tft);
-    runNostromoSimulation(tft);
-
-    // int scrollHeight = 8;
-    // tft->fillScreen(TFT_BLACK);
-    // tft->setTextSize(25);
-    // tft->setCursor(0,tft->height()-scrollHeight);
-    // tft->print("test");
-    // tft->output();
-    // uint16_t *buffer = new uint16_t[tft->width() * scrollHeight];
-    // tft->readRect(0, scrollHeight, tft->width(), tft->height() - scrollHeight, buffer);
-    // tft->pushImage(0, 0, tft->width(), tft->height() - scrollHeight, buffer);
-    // tft->fillRect(0, tft->height() - scrollHeight, tft->width(), scrollHeight, bgColor);
-    // delete[] buffer;
+    playTetris(tft);
+    // runNostromoSimulation(tft);
 }
 
 void loop()
