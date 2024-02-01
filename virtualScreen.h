@@ -227,7 +227,7 @@ public:
 
                 int canvasIndex = (y + i) * _width + (x + j);
 
-                canvas[canvasIndex] = buffer[bufferIndex];
+                drawPixel(x+j,y+i,buffer[bufferIndex]);
             }
         }
     }

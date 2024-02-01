@@ -67,8 +67,8 @@ void setup()
     // solveMaze(tft);
     // font_test(tft);
     // image_test(tft);
-    playTetris(tft);
-    // runNostromoSimulation(tft);
+    // playTetris(tft);
+    runNostromoSimulation(tft);
 }
 
 void loop()
