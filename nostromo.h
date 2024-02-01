@@ -29,7 +29,7 @@ void printMessage(VirtualDisplay *display, const String &message) {
     // Print the new message at the bottom
     display->setCursor(0, bottomLineY);
     display->setTextColor(textColor);
-    display->setTextSize(5);
+    display->setTextSize(2);
     
     for (char c : message) {
         display->print(c);
