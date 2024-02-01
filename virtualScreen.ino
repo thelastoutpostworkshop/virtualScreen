@@ -17,6 +17,14 @@
 
 VirtualDisplay *tft;
 
+// Screen grid[ROWS][COLUMNS] = {
+//     {{.row = 0, .column = 0, .cs = 7, .rotation = 2},
+//      {.row = 0, .column = 1, .cs = 6, .rotation = 2},
+//      {.row = 0, .column = 2, .cs = 15, .rotation = 2}},
+//     {{.row = 1, .column = 0, .cs = 16, .rotation = 0},
+//      {.row = 1, .column = 1, .cs = 11, .rotation = 0},
+//      {.row = 1, .column = 2, .cs = 9, .rotation = 0}}};
+
 void setup()
 {
     Serial.begin(115200);
@@ -30,10 +38,10 @@ void setup()
         Serial.println("No PSRAM!");
         return;
     }
-    Serial.printf("PSRAM Left = %lu\n", ESP.getFreePsram());
 
     ScreenBuilder screens;
-    screens.addRow({{16, 0}, {15, 0}, {6, 0}, {7, 0}});
+    // screens.addRow({{16, 0}, {15, 0}, {6, 0}, {7, 0}});
+    screens.addRow({{15, 2}, {6, 2}, {7, 2},{9, 0}, {11, 0}, {16, 0}});
     tft = new VirtualDisplay(screens.width(), screens.height(), &screens);
 
     if (!tft->begin())
@@ -41,6 +49,7 @@ void setup()
         Serial.println("Memory Allocation for virtual screen failed");
         return;
     }
+    Serial.printf("PSRAM Left = %lu\n", ESP.getFreePsram());
 
     // Demonstrations
     //
@@ -51,10 +60,9 @@ void setup()
     // solveMaze(tft);
     // font_test(tft);
     // image_test(tft);
-    playTetris(tft);
+    // playTetris(tft);
 }
 
 void loop()
 {
 }
-
