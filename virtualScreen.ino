@@ -61,14 +61,13 @@ void setup()
     // Demonstrations
     //
 
-    // test_images();
     // playPong(tft);
     // gameOfLife(tft);
     // solveMaze(tft);
     // font_test(tft);
-    // image_test(tft);
+    image_test(tft);
     // playTetris(tft);
-    runNostromoSimulation(tft);
+    // runNostromoSimulation(tft);
 }
 
 void loop()
