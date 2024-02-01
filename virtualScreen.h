@@ -188,11 +188,14 @@ public:
         {
 
             uint16_t *screenImage = getScreenImage(screen);
-            digitalWrite(screen.cs, LOW);
-            display.pushImage(0, 0, display.width(), display.height(), screenImage);
-            digitalWrite(screen.cs, HIGH);
+            if (screen.dirty)
+            {
+                digitalWrite(screen.cs, LOW);
+                display.pushImage(0, 0, display.width(), display.height(), screenImage);
+                digitalWrite(screen.cs, HIGH);
+            }
         }
-        // clearDirtyFlag();
+        clearDirtyFlag();
     }
 
     ~VirtualDisplay()
@@ -227,7 +230,7 @@ public:
 
                 int canvasIndex = (y + i) * _width + (x + j);
 
-                drawPixel(x+j,y+i,buffer[bufferIndex]);
+                drawPixel(x + j, y + i, buffer[bufferIndex]);
             }
         }
     }
@@ -256,12 +259,12 @@ public:
             return;
         }
 
-        // Screen *screen = screenBuilder->getScreen(x, y);
+        Screen *screen = screenBuilder->getScreen(x, y);
 
-        // if (screen)
-        // {
-        //     screen->dirty = true;
-        // }
+        if (screen)
+        {
+            screen->dirty = true;
+        }
 
         canvas[y * _width + x] = color;
     }
