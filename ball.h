@@ -81,7 +81,7 @@ void runBouncingBall(VirtualDisplay *display)
     {
         ball.draw(TFT_BLACK);
         ball.update();
-        ball.draw(TFT_WHITE);
+        ball.draw(0xfda0);
         display->output();
     }
 }
