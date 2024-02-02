@@ -15,11 +15,11 @@ public:
     BouncingBall(VirtualDisplay *display) : display(display)
     {
         // Initial ball setup
-        ballRadius = 10; // Adjust as needed
+        ballRadius = 20; // Adjust as needed
         x = 0;
         y = display->height() / 2;
-        vx = 5;           // Initial horizontal velocity
-        vy = 0;           // Initial vertical velocity
+        vx = 20;           // Initial horizontal velocity
+        vy = 5;           // Initial vertical velocity
         gravity = 0.5;    // Adjust as needed
         elasticity = 1; // Adjust as needed (between 0 and 1)
     }
