@@ -31,25 +31,28 @@ void loop()
 class BouncingBall
 {
 private:
-    float x, y;                 // Ball's position
-    float vx, vy;               // Ball's velocity
-    float gravity;              // Gravity effect
-    float elasticity;           // Bounce reduction factor
-    int ballRadius;             // Ball radius
+    float x, y;        // Ball's position
+    float vx, vy;      // Ball's velocity
+    float gravity;     // Gravity effect
+    float elasticity;  // Bounce reduction factor
+    int ballRadius;    // Ball radius
+    int captureRadius; // Slightly larger to ensure clean edges
+
     uint16_t *backgroundBuffer; // Buffer for storing background
     VirtualDisplay *display;    // Pointer to virtual display
 
 public:
     BouncingBall(VirtualDisplay *display) : display(display)
     {
-        ballRadius = 20; // Adjust as needed
-        x = display->width() / 2;
+        ballRadius = 20;
+        captureRadius = ballRadius + 4;
+        x = ballRadius + 5;
         y = display->height() / 2;
-        vx = 5;                                                               // Initial horizontal velocity
-        vy = 0;                                                               // Initial vertical velocity
-        gravity = 0.98;                                                       // Adjust as needed
-        elasticity = 0.8;                                                     // Adjust as needed (between 0 and 1)
-        backgroundBuffer = new uint16_t[(ballRadius * 2) * (ballRadius * 2)]; // Allocate memory for background buffer
+        vx = 5;                                                                     // Initial horizontal velocity
+        vy = 0;                                                                     // Initial vertical velocity
+        gravity = 0.9;                                                              // Adjust as needed
+        elasticity = 1;                                                             // Adjust as needed (between 0 and 1)
+        backgroundBuffer = new uint16_t[(captureRadius * 2) * (captureRadius * 2)]; // Allocate memory for background buffer
     }
 
     ~BouncingBall()
@@ -80,9 +83,13 @@ public:
         }
     }
 
+    void init()
+    {
+        display->readRect(x - captureRadius, y - captureRadius, captureRadius * 2, captureRadius * 2, backgroundBuffer);
+    }
+
     void draw()
     {
-        int captureRadius = ballRadius + 2; // Slightly larger to ensure clean edges
 
         // Erase the ball at the current position by restoring the background
         display->pushImage(x - captureRadius, y - captureRadius, captureRadius * 2, captureRadius * 2, backgroundBuffer);
@@ -105,7 +112,7 @@ void runBouncingBall(VirtualDisplay *display)
     // Clear the screen and draw the initial background
     display->fillScreen(TFT_BLACK);
     display->drawRGBBitmap(0, 0, (uint16_t *)ballcourt, ballcourt_width, ballcourt_height);
-
+    ball.init();
     while (true)
     {
         ball.draw();
