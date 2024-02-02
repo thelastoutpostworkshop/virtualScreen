@@ -8,7 +8,7 @@ private:
     float gravity;    // Gravity effect
     float elasticity; // Bounce reduction factor
     int ballRadius;   // Ball radius
-    float rotation;   // Rotation angle of the ball's texture
+    int rotation = 0; // Rotation angle of the ball's texture
 
     VirtualDisplay *display; // Pointer to your virtual display
 
@@ -53,6 +53,8 @@ public:
         { // Side edges
             vx = -vx;
         }
+        // Keep the rotation within 0-360 degrees
+        rotation = (rotation + 10) % 360;
     }
 
     void draw(uint16_t color)
@@ -61,14 +63,11 @@ public:
 
         if (color != TFT_BLACK)
         {
-            // Draw texture on the ball to simulate rolling
-            for (int i = 0; i < 360; i += 45)
-            { // Draw every 45 degrees
-                float rad = (i + rotation) * (PI / 180.0);
-                float lineX = ballRadius * cos(rad);
-                float lineY = ballRadius * sin(rad);
-                display->drawLine(x, y, x + lineX, y + lineY, TFT_BLACK);
-            }
+            // Draw a round spot on the edge of the ball to simulate rolling
+            float rad = rotation * (PI / 180.0);
+            float spotX = x + (ballRadius - 8) * cos(rad); // Adjust -5 to ensure the spot is within the ball's edge
+            float spotY = y + (ballRadius - 8) * sin(rad);
+            display->fillCircle(spotX, spotY, 5, TFT_BLACK); // Draw the spot
         }
     }
 };
