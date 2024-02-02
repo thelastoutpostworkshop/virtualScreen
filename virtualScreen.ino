@@ -24,7 +24,6 @@ void setup()
     //
 
     runBouncingBall(tft);
-
 }
 
 void loop()
@@ -34,16 +33,16 @@ void loop()
 class BouncingBall
 {
 private:
-    float x, y;       // Ball's position
     float vx, vy;     // Ball's velocity
     float gravity;    // Gravity effect
     float elasticity; // Bounce reduction factor
-    int ballRadius;   // Ball radius
     int rotation = 0; // Rotation angle of the ball's texture
 
     VirtualDisplay *display; // Pointer to your virtual display
 
 public:
+    float x, y;     // Ball's position
+    int ballRadius; // Ball radius
     BouncingBall(VirtualDisplay *display) : display(display)
     {
         // Initial ball setup
@@ -91,28 +90,41 @@ public:
     void draw(uint16_t color)
     {
         display->fillCircle(x, y, ballRadius, color); // Draw the ball
-
-        if (color != TFT_BLACK)
-        {
-            // Draw a round spot on the edge of the ball to simulate rolling
-            float rad = rotation * (PI / 180.0);
-            float spotX = x + (ballRadius - 8) * cos(rad); // Adjust -5 to ensure the spot is within the ball's edge
-            float spotY = y + (ballRadius - 8) * sin(rad);
-            display->fillCircle(spotX, spotY, 5, TFT_BLACK); // Draw the spot
-        }
+        // Draw a round spot on the edge of the ball to simulate rolling
+        float rad = rotation * (PI / 180.0);
+        float spotX = x + (ballRadius - 8) * cos(rad); // Adjust -5 to ensure the spot is within the ball's edge
+        float spotY = y + (ballRadius - 8) * sin(rad);
+        display->fillCircle(spotX, spotY, 5, TFT_BLACK); // Draw the spot
     }
 };
 
 void runBouncingBall(VirtualDisplay *display)
 {
+    float x, y;
     BouncingBall ball(display);
     display->fillScreen(TFT_BLACK); // Clear the screen
     display->drawRGBBitmap(0, 0, (uint16_t *)ballcourt, ballcourt_width, ballcourt_height);
-    while (true)
+    uint16_t *background = (uint16_t *)malloc(ball.ballRadius * 2);
+    if (!background)
     {
-        ball.draw(TFT_BLACK);
-        ball.update();
-        ball.draw(0xfda0);
-        display->output();
+        Serial.println("Cannot allocate memory");
+    }
+    else
+    {
+        x = ball.x;
+        y = ball.y;
+        display->readRect(x, y, ball.ballRadius, ball.ballRadius, background);
+        while (true)
+        {
+            // ball.draw(TFT_BLACK);
+            display->pushImage(x, y, ball.ballRadius, ball.ballRadius, background);
+            ball.update();
+            x = ball.x;
+            y = ball.y;
+            display->readRect(x, y, ball.ballRadius, ball.ballRadius, background);
+            ball.draw(0xfda0);
+            display->output();
+            break;
+        }
     }
 }
