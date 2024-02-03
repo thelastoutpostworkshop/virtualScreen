@@ -164,7 +164,7 @@ void drawGameOfLife()
     {
         for (int x = 0; x < gridWidth; x++)
         {
-            uint16_t color = currentGrid[y][x] ? TFT_WHITE : TFT_BLACK;
+            uint16_t color = currentGrid[y][x] ? 0x07e0 : TFT_BLACK;
             tft->fillRect(x * squareSize + statsWidth, y * squareSize, squareSize, squareSize, color);
         }
     }
