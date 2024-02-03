@@ -1,5 +1,6 @@
 #include "virtualScreen.h"
 #include "fonts/Fun_Games20pt7b.h"
+#include "fonts/Fun_Games40pt7b.h"
 
 VirtualDisplay *tft;
 
@@ -113,7 +114,8 @@ void drawMessage(const String &message)
     tft->fillRect(0, 0, messageAreaWidth, tft->height(), TFT_BLACK);
 
     // Set text properties and display the message
-    tft->setTextColor(TFT_WHITE);
-    tft->setCursor(55, 125);
+    tft->setFont(&Fun_Games40pt7b);
+    tft->setTextColor(0xfec0);
+    tft->setCursor(25, 150);
     tft->print(message);
 }
