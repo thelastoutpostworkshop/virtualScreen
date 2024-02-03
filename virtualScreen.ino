@@ -37,6 +37,7 @@ private:
     float elasticity;  // Bounce reduction factor
     int ballRadius;    // Ball radius
     int captureRadius; // Slightly larger to ensure clean edges
+    int rotation = 0;
 
     uint16_t *backgroundBuffer; // Buffer for storing background
     VirtualDisplay *display;    // Pointer to virtual display
@@ -48,7 +49,7 @@ public:
         captureRadius = ballRadius + 4;
         x = ballRadius + 5;
         y = display->height() / 2;
-        vx = 10;                                                                     // Initial horizontal velocity
+        vx = 10;                                                                    // Initial horizontal velocity
         vy = 0;                                                                     // Initial vertical velocity
         gravity = 0.8;                                                              // Adjust as needed
         elasticity = 1;                                                             // Adjust as needed (between 0 and 1)
@@ -81,6 +82,7 @@ public:
             vy = -vy * elasticity;
             y += vy;
         }
+        rotation += vx / 5.0; // Adjust rotation speed based on velocity
     }
 
     void init()
@@ -101,7 +103,13 @@ public:
         display->readRect(x - captureRadius, y - captureRadius, captureRadius * 2, captureRadius * 2, backgroundBuffer);
 
         // Draw the ball at the new position
-        display->fillCircle(x, y, ballRadius, 0x8301); // Use a contrasting color for visibility
+        display->fillCircle(x, y, ballRadius, 0x8301);
+
+        // Draw a round spot on the edge of the ball to simulate rolling
+        float rad = rotation * (PI / 180.0);
+        float spotX = x + (ballRadius - 8) * cos(rad); // Adjust -5 to ensure the spot is within the ball's edge
+        float spotY = y + (ballRadius - 8) * sin(rad);
+        display->fillCircle(spotX, spotY, 5, TFT_BLACK); // Draw the spot
     }
 };
 
