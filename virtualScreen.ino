@@ -172,17 +172,17 @@ void drawGameOfLife()
 }
 void drawPopulationGraph()
 {
-    int graphWidth = statsWidth - 10;                  // Width of the graph, leaving some margin
-    int graphHeight = 50;                              // Height of the graph, adjust as needed
-    int graphX = 5;                                    // X position of the graph
+    int graphWidth = statsWidth - 10;              // Width of the graph, leaving some margin
+    int graphHeight = 50;                          // Height of the graph, adjust as needed
+    int graphX = 5;                                // X position of the graph
     int graphY = tft->height() - graphHeight - 10; // Y position, placed at the bottom
-    int titleHeight = 15;                              // Height for the title area
+    int titleHeight = 15;                          // Height for the title area
 
     // Clear the area for the graph and title
     tft->fillRect(graphX, graphY - titleHeight, graphWidth, graphHeight + titleHeight, statsBgColor);
 
     // Draw the title for the graph
-    tft->setTextColor(TFT_WHITE);
+    tft->setTextColor(0x07fb);
     tft->setCursor(8, graphY - titleHeight); // Set position for the title
     tft->print("Population Over Time");
 
@@ -206,25 +206,25 @@ void drawPopulationGraph()
     }
 }
 
-
 void drawStats(int generation)
 {
     // Clear the stats area
     tft->fillRect(0, 0, statsWidth, tft->height(), statsBgColor);
 
-    // Display the generation count
-    tft->setTextColor(TFT_WHITE);
+    tft->setTextColor(0x07fb);
     tft->setFont(&BebasNeue_Regular13pt7b);
-    tft->setCursor(8, 25); // Adjust text position as needed
-    tft->print("Gen:");
-    tft->print(generation);
+    tft->setCursor(8, 30); 
+    tft->print("Generation:");
     tft->setTextColor(TFT_WHITE);
-    tft->setCursor(8, 55); // Adjust position as needed
+    tft->print(generation);
+    tft->setTextColor(0x07fb);
+    tft->setCursor(8, 60); 
     tft->print("Alive: ");
+    tft->setTextColor(TFT_WHITE);
     tft->print(aliveCellsCount);
-    tft->setCursor(8, 85); // Adjust for next stat position
+    tft->setCursor(8, 90); 
+    tft->setTextColor(0x07fb);
     tft->print("Change: ");
+    tft->setTextColor(TFT_WHITE);
     tft->print(changeRate);
 }
-
-
