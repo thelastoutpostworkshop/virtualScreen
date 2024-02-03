@@ -33,9 +33,9 @@ void setup()
 void loop()
 {
     // Generate a random color
-    uint16_t randomColor = tft->color565(random(0, 32), random(0, 64), random(0, 32)); // RGB values
+    uint16_t randomColor = tft->color565(esp_random() % 256, esp_random() % 256, esp_random() % 256); // RGB values
     tft->setTextColor(randomColor);
-    tft->setCursor(40, 375);
+    tft->setCursor(50, 385);
     tft->print("Very Strange Clocks");
 
     tft->output();
