@@ -29,14 +29,15 @@ void setup()
     tft->pushImage(240, 0, clock2_width, clock2_height, (uint16_t *)clock2);
     tft->pushImage(480, 0, clock3_width, clock3_height, (uint16_t *)clock3);
     tft->setFont(&SecondWorldDemoRegular40pt7b);
+    tft->setTextColor(0x063f);
+    tft->setCursor(50, 385);
+    tft->print("Very Strange Clocks");
 }
 void loop()
 {
-    // Generate a random color
-    uint16_t randomColor = tft->color565(esp_random() % 256, esp_random() % 256, esp_random() % 256); // RGB values
-    tft->setTextColor(randomColor);
-    tft->setCursor(50, 385);
-    tft->print("Very Strange Clocks");
+    tft->highlightArea(240, 0, clock2_width, clock2_height, 0.5f);
 
+    tft->output();
+    tft->pushImage(240, 0, clock2_width, clock2_height, (uint16_t *)clock2);
     tft->output();
 }

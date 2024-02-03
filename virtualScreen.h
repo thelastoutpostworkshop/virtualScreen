@@ -153,6 +153,23 @@ private:
         clearDirtyFlag();
     }
 
+    // Method to adjust color brightness
+    uint16_t adjustBrightness(uint16_t color, float intensity)
+    {
+        // Decompose the color into its RGB components
+        uint8_t r = (color >> 11) & 0x1F;
+        uint8_t g = (color >> 5) & 0x3F;
+        uint8_t b = color & 0x1F;
+
+        // Increase brightness according to the specified intensity, ensuring no overflow
+        r = std::min(31.0f, r * (1.0f + intensity));
+        g = std::min(63.0f, g * (1.0f + intensity));
+        b = std::min(31.0f, b * (1.0f + intensity));
+
+        // Recompose the color
+        return (r << 11) | (g << 5) | b;
+    }
+
 public:
     VirtualDisplay(int16_t w, int16_t h, ScreenBuilder *builder) : Adafruit_GFX(w, h)
     {
@@ -196,6 +213,28 @@ public:
             }
         }
         clearDirtyFlag();
+    }
+
+    // Method to highlight a specified area of the canvas with adjustable intensity
+    void highlightArea(int16_t x, int16_t y, int16_t width, int16_t height, float intensity)
+    {
+        for (int16_t row = y; row < y + height; ++row)
+        {
+            for (int16_t col = x; col < x + width; ++col)
+            {
+                if (col >= 0 && col < _width && row >= 0 && row < _height)
+                {
+                    // Fetch the original color from the canvas
+                    uint16_t originalColor = canvas[row * _width + col];
+
+                    // Adjust the color brightness based on the specified intensity
+                    uint16_t adjustedColor = adjustBrightness(originalColor, intensity);
+
+                    // Update the pixel on the canvas
+                    drawPixel(col, row, adjustedColor);
+                }
+            }
+        }
     }
 
     ~VirtualDisplay()
