@@ -60,7 +60,7 @@ void playPong()
         ballY += ballVelocityY;
 
         // Check for ball collisions with the top and bottom of the screen
-        if (ballY <= scoreAreaHeight || ballY >= tft->height() - ballSize)
+        if (ballY <= scoreAreaHeight+(ballSize*2+5) || ballY >= tft->height() - ballSize)
         {
             ballVelocityY = -ballVelocityY;
         }
@@ -78,7 +78,7 @@ void playPong()
             (ballX >= tft->width() - paddleWidth - ballSize && ballY >= rightPaddleY && ballY <= rightPaddleY + paddleHeight))
         {
             ballVelocityX = -ballVelocityX;
-            ballVelocityY += (esp_random() % 5) - 2; 
+            ballVelocityY += esp_random() % 5; 
         }
 
         // Draw the updated game state
