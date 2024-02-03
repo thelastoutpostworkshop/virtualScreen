@@ -26,6 +26,8 @@ void loop()
     // Your loop can remain empty if everything is handled in runBouncingBall
 }
 
+std::vector<std::vector<bool>> updateGrid;
+
 // Define Tetromino shapes
 const int I[4][4] = {
     {0, 0, 0, 0},
@@ -113,15 +115,14 @@ void playTetris()
         {
             // If the tetromino cannot move down, place it on the grid
             placeTetromino();
-            // clearLines(); // Call the line-clearing function
+            clearLines(); // Call the line-clearing function
             spawnTetromino(); // Spawn a new tetromino
         }
 
         placeTetromino();
-        // Draw the grid and current tetromino
         drawGrid();
 
-        tft->output();
+        tft->output(); // Assuming this function outputs the virtual display to the actual display
     }
 }
 
@@ -210,43 +211,14 @@ void placeTetromino()
         {
             if (currentTetromino.shape[i][j])
             {
-                int newX = currentTetromino.x + j; // Calculate the correct x position
-                int newY = currentTetromino.y + i; // Calculate the correct y position
+                int newX = currentTetromino.x + j;
+                int newY = currentTetromino.y + i;
 
-                // Check if the calculated position is within the bounds of the grid
                 if (newX >= 0 && newX < tetrisWidth && newY >= 0 && newY < tetrisHeight)
+                {
                     grid[newX][newY] = currentTetromino.color;
-            }
-        }
-    }
-}
-
-void setupTetris()
-{
-    tetrisWidth = tft->width() / blockSize;   // Use the full width of the tft
-    tetrisHeight = tft->height() / blockSize; // Height based on the tft height
-    grid = std::vector<std::vector<int>>(tetrisWidth, std::vector<int>(tetrisHeight, 0));
-
-    spawnTetromino();
-}
-
-void drawGrid()
-{
-    for (int x = 0; x < tetrisWidth; x++)
-    {
-        for (int y = 0; y < tetrisHeight; y++)
-        {
-            int drawX = x * blockSize; // Corresponds to tft's width
-            int drawY = y * blockSize; // Corresponds to tft's height
-
-            if (grid[x][y])
-            {
-                tft->fillRect(drawX, drawY, blockSize, blockSize, grid[x][y]);
-            }
-            else
-            {
-                tft->fillRect(drawX, drawY, blockSize, blockSize, TFT_BLACK);
-                tft->drawRect(drawX, drawY, blockSize, blockSize, 0x4a89);
+                    updateGrid[newX][newY] = true; // Mark this cell for updating
+                }
             }
         }
     }
@@ -266,9 +238,46 @@ void clearTetrominoPosition()
                 if (newX >= 0 && newX < tetrisWidth && newY >= 0 && newY < tetrisHeight)
                 {
                     grid[newX][newY] = 0; // Clear the cell
+                    updateGrid[newX][newY] = true; // Mark this cell for updating
                 }
             }
         }
     }
 }
+
+void setupTetris()
+{
+    tetrisWidth = tft->width() / blockSize;
+    tetrisHeight = tft->height() / blockSize;
+    grid = std::vector<std::vector<int>>(tetrisWidth, std::vector<int>(tetrisHeight, 0));
+    updateGrid = std::vector<std::vector<bool>>(tetrisWidth, std::vector<bool>(tetrisHeight, true)); // Initially, all cells need to be drawn
+
+    spawnTetromino();
+}
+
+// Modify drawGrid to only redraw cells that have changed
+void drawGrid()
+{
+    for (int x = 0; x < tetrisWidth; x++)
+    {
+        for (int y = 0; y < tetrisHeight; y++)
+        {
+            if (updateGrid[x][y]) // Only update cells marked for redraw
+            {
+                int drawX = x * blockSize;
+                int drawY = y * blockSize;
+                uint16_t color = grid[x][y] ? grid[x][y] : TFT_BLACK;
+                tft->fillRect(drawX, drawY, blockSize, blockSize, color);
+
+                if (!grid[x][y]) // Optionally, redraw the grid lines for empty cells
+                {
+                    tft->drawRect(drawX, drawY, blockSize, blockSize, 0x4a89);
+                }
+
+                updateGrid[x][y] = false; // Reset the update flag
+            }
+        }
+    }
+}
+
 
