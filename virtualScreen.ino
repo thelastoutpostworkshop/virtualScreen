@@ -1,5 +1,5 @@
 #include "virtualScreen.h"
-#include "images/ballcourt.h" // Ensure this is correctly included
+#include "images/ballcourt.h" 
 
 VirtualDisplay *tft;
 
@@ -20,7 +20,7 @@ void setup()
     }
 
     // Start the bouncing ball animation
-    runBouncingBall(tft);
+    runBouncingBall();
 }
 
 void loop()
@@ -40,15 +40,14 @@ private:
     int rotation = 0;
 
     uint16_t *backgroundBuffer; // Buffer for storing background
-    VirtualDisplay *display;    // Pointer to virtual display
 
 public:
-    BouncingBall(VirtualDisplay *display) : display(display)
+    BouncingBall() 
     {
         ballRadius = 20;
         captureRadius = ballRadius + 4;
         x = ballRadius + 5;
-        y = display->height() / 2;
+        y = tft->height() / 2;
         vx = 10;                                                                    // Initial horizontal velocity
         vy = 0;                                                                     // Initial vertical velocity
         gravity = 0.8;                                                              // Adjust as needed
@@ -71,58 +70,52 @@ public:
         x += vx;
         y += vy;
 
-        if (x <= ballRadius || x >= display->width() - ballRadius)
+        if (x <= ballRadius || x >= tft->width() - ballRadius)
         {
             vx = -vx;
             x += vx;
         }
 
-        if (y <= ballRadius || y >= display->height() - ballRadius)
+        if (y <= ballRadius || y >= tft->height() - ballRadius)
         {
             vy = -vy * elasticity;
             y += vy;
         }
-        rotation += vx / 5.0; // Adjust rotation speed based on velocity
+        rotation += vx / 3.0; // Adjust rotation speed based on velocity
     }
 
     void init()
     {
-        display->readRect(x - captureRadius, y - captureRadius, captureRadius * 2, captureRadius * 2, backgroundBuffer);
+        tft->readRect(x - captureRadius, y - captureRadius, captureRadius * 2, captureRadius * 2, backgroundBuffer);
     }
 
     void draw()
     {
 
         // Erase the ball at the current position by restoring the background
-        display->pushImage(x - captureRadius, y - captureRadius, captureRadius * 2, captureRadius * 2, backgroundBuffer);
+        tft->pushImage(x - captureRadius, y - captureRadius, captureRadius * 2, captureRadius * 2, backgroundBuffer);
 
         // Update position for the next frame
         update();
 
         // Capture the background at the new position, slightly larger area
-        display->readRect(x - captureRadius, y - captureRadius, captureRadius * 2, captureRadius * 2, backgroundBuffer);
+        tft->readRect(x - captureRadius, y - captureRadius, captureRadius * 2, captureRadius * 2, backgroundBuffer);
 
         // Draw the ball at the new position
-        display->fillCircle(x, y, ballRadius, 0x8301);
-
-        // Draw a round spot on the edge of the ball to simulate rolling
-        float rad = rotation * (PI / 180.0);
-        float spotX = x + (ballRadius - 8) * cos(rad); // Adjust -5 to ensure the spot is within the ball's edge
-        float spotY = y + (ballRadius - 8) * sin(rad);
-        display->fillCircle(spotX, spotY, 5, TFT_BLACK); // Draw the spot
+        tft->fillCircle(x, y, ballRadius, 0xf5e5);
     }
 };
 
-void runBouncingBall(VirtualDisplay *display)
+void runBouncingBall()
 {
-    BouncingBall ball(display);
+    BouncingBall ball;
 
-    display->fillScreen(TFT_BLACK);
-    display->drawRGBBitmap(0, 0, (uint16_t *)ballcourt, ballcourt_width, ballcourt_height);
+    tft->fillScreen(TFT_BLACK);
+    tft->drawRGBBitmap(0, 0, (uint16_t *)ballcourt, ballcourt_width, ballcourt_height);
     ball.init();
     while (true)
     {
         ball.draw();
-        display->output(); // Update the virtual display
+        tft->output(); // Update the virtual display
     }
 }
