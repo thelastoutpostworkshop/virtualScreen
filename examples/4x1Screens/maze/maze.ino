@@ -3,6 +3,31 @@
 #include <stack>
 #include <utility> // For std::pair
 
+VirtualDisplay *tft;
+
+void setup()
+{
+    Serial.begin(115200);
+
+    ScreenBuilder screens;
+    // Adjust this setup according to your actual screen configuration
+    screens.addRow({{16, 0}, {15, 0}, {6, 0}, {7, 0}});
+
+    tft = new VirtualDisplay(screens.width(), screens.height(), &screens);
+
+    if (!tft->begin())
+    {
+        Serial.println("Memory Allocation for virtual screen failed");
+        return;
+    }
+
+    playMaze();
+}
+
+void loop()
+{
+}
+
 struct Cell
 {
     bool visited = false;
@@ -18,6 +43,13 @@ const int paddingSize = 5; // Total padding in pixels, adjust as needed
 std::vector<std::vector<Cell>> maze;
 int mazeWidth;  // Maze width in cells
 int mazeHeight; // Maze height in cells
+
+void playMaze()
+{
+    tft->fillScreen(TFT_BLACK);
+    setupMaze();
+}
+
 
 std::vector<std::pair<int, int>> solveMaze()
 {
@@ -143,7 +175,7 @@ void generateMaze()
         }
     }
 }
-void drawMaze(VirtualDisplay *display, const std::vector<std::pair<int, int>> &path)
+void drawMaze(const std::vector<std::pair<int, int>> &path)
 {
     for (int y = 0; y < mazeHeight; y++)
     {
@@ -156,19 +188,19 @@ void drawMaze(VirtualDisplay *display, const std::vector<std::pair<int, int>> &p
             // Draw the walls of the cell
             if (maze[y][x].topWall)
             {
-                display->drawLine(x0, y0, x0 + cellSize, y0, TFT_WHITE); // Top wall
+                tft->drawLine(x0, y0, x0 + cellSize, y0, TFT_WHITE); // Top wall
             }
             if (maze[y][x].bottomWall)
             {
-                display->drawLine(x0, y0 + cellSize, x0 + cellSize, y0 + cellSize, TFT_WHITE); // Bottom wall
+                tft->drawLine(x0, y0 + cellSize, x0 + cellSize, y0 + cellSize, TFT_WHITE); // Bottom wall
             }
             if (maze[y][x].leftWall)
             {
-                display->drawLine(x0, y0, x0, y0 + cellSize, TFT_WHITE); // Left wall
+                tft->drawLine(x0, y0, x0, y0 + cellSize, TFT_WHITE); // Left wall
             }
             if (maze[y][x].rightWall)
             {
-                display->drawLine(x0 + cellSize, y0, x0 + cellSize, y0 + cellSize, TFT_WHITE); // Right wall
+                tft->drawLine(x0 + cellSize, y0, x0 + cellSize, y0 + cellSize, TFT_WHITE); // Right wall
             }
         }
     }
@@ -191,8 +223,8 @@ void drawMaze(VirtualDisplay *display, const std::vector<std::pair<int, int>> &p
         // Draw line only if the next cell is a neighbor
         if (isNeighbor)
         {
-            display->drawLine(x0, y0, x1, y1, TFT_YELLOW);
-            display->output();
+            tft->drawLine(x0, y0, x1, y1, TFT_YELLOW);
+            tft->output();
         }
     }
     if (!path.empty())
@@ -204,17 +236,17 @@ void drawMaze(VirtualDisplay *display, const std::vector<std::pair<int, int>> &p
 
         // Draw a yellow circle at the end of the path
         int radius = cellSize / 4; // Radius of the circle
-        display->fillCircle(centerX, centerY, radius, TFT_YELLOW);
+        tft->fillCircle(centerX, centerY, radius, TFT_YELLOW);
     }
 
-    display->output();
+    tft->output();
 }
 
-void setupMaze(VirtualDisplay *mazeTFT)
+void setupMaze()
 {
     // Adjusted dimensions to account for padding
-    mazeWidth = (mazeTFT->width() - paddingSize) / cellSize;   // Ensure odd number
-    mazeHeight = (mazeTFT->height() - paddingSize) / cellSize; // Ensure odd number
+    mazeWidth = (tft->width() - paddingSize) / cellSize;   // Ensure odd number
+    mazeHeight = (tft->height() - paddingSize) / cellSize; // Ensure odd number
 
     // Ensure dimensions are odd numbers
     if (mazeWidth % 2 == 0)
@@ -233,11 +265,9 @@ void setupMaze(VirtualDisplay *mazeTFT)
     generateMaze();
     auto path = solveMaze();
 
-    drawMaze(mazeTFT, path);
+    drawMaze(path);
 }
 
-void solveMaze(VirtualDisplay *tft)
-{
-    tft->fillScreen(TFT_BLACK);
-    setupMaze(tft);
-}
+
+
+
