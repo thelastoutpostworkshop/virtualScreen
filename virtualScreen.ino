@@ -46,7 +46,7 @@ public:
     {
         ballRadius = 20;
         captureRadius = ballRadius + 4;
-        x = ballRadius + 5;
+        x = 0;//ballRadius + 5;
         y = display->height() / 2;
         vx = 10;                                                                     // Initial horizontal velocity
         vy = 0;                                                                     // Initial vertical velocity
