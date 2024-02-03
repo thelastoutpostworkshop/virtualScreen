@@ -4,12 +4,12 @@
 #include <utility> // For std::pair
 
 VirtualDisplay *tft;
+ScreenBuilder screens;
 
 void setup()
 {
     Serial.begin(115200);
 
-    ScreenBuilder screens;
     // Adjust this setup according to your actual screen configuration
     screens.addRow({{16, 0}, {15, 0}, {6, 0}, {7, 0}});
 
@@ -49,7 +49,6 @@ void playMaze()
     tft->fillScreen(TFT_BLACK);
     setupMaze();
 }
-
 
 std::vector<std::pair<int, int>> solveMaze()
 {
@@ -267,7 +266,3 @@ void setupMaze()
 
     drawMaze(path);
 }
-
-
-
-

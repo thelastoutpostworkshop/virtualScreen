@@ -2,12 +2,12 @@
 #include "fonts/BebasNeue_Regular13pt7b.h"
 
 VirtualDisplay *tft;
+ScreenBuilder screens;
 
 void setup()
 {
     Serial.begin(115200);
 
-    ScreenBuilder screens;
     // Adjust this setup according to your actual screen configuration
     screens.addRow({{16, 0}, {15, 0}, {6, 0}, {7, 0}});
 
@@ -212,16 +212,16 @@ void drawStats(int generation)
 
     tft->setTextColor(0x07fb);
     tft->setFont(&BebasNeue_Regular13pt7b);
-    tft->setCursor(8, 30); 
+    tft->setCursor(8, 30);
     tft->print("Generation:");
     tft->setTextColor(TFT_WHITE);
     tft->print(generation);
     tft->setTextColor(0x07fb);
-    tft->setCursor(8, 60); 
+    tft->setCursor(8, 60);
     tft->print("Alive: ");
     tft->setTextColor(TFT_WHITE);
     tft->print(aliveCellsCount);
-    tft->setCursor(8, 90); 
+    tft->setCursor(8, 90);
     tft->setTextColor(0x07fb);
     tft->print("Change: ");
     tft->setTextColor(TFT_WHITE);

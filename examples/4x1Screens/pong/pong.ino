@@ -3,12 +3,12 @@
 #include "fonts/Fun_Games40pt7b.h"
 
 VirtualDisplay *tft;
+ScreenBuilder screens;
 
 void setup()
 {
     Serial.begin(115200);
 
-    ScreenBuilder screens;
     // Adjust this setup according to your actual screen configuration
     screens.addRow({{16, 0}, {15, 0}, {6, 0}, {7, 0}});
 
@@ -74,7 +74,7 @@ void playPong()
         rightPaddleY = max(scoreAreaHeight, min(tft->height() - paddleHeight, rightPaddleY));
 
         // Check for ball collisions with the paddles
-        if ((ballX <= messageAreaWidth + paddleWidth+ballSize*2 && ballY >= leftPaddleY && ballY <= leftPaddleY + paddleHeight) ||
+        if ((ballX <= messageAreaWidth + paddleWidth + ballSize * 2 && ballY >= leftPaddleY && ballY <= leftPaddleY + paddleHeight) ||
             (ballX >= tft->width() - paddleWidth - ballSize && ballY >= rightPaddleY && ballY <= rightPaddleY + paddleHeight))
         {
             ballVelocityX = -ballVelocityX;

@@ -1,12 +1,12 @@
 #include "virtualScreen.h"
 
 VirtualDisplay *tft;
+ScreenBuilder screens;
 
 void setup()
 {
     Serial.begin(115200);
 
-    ScreenBuilder screens;
     // Adjust this setup according to your actual screen configuration
     screens.addRow({{16, 0}, {15, 0}, {6, 0}, {7, 0}});
 
@@ -96,7 +96,6 @@ struct Tetromino
     uint16_t color;  // Color
 } currentTetromino;
 
-
 void playTetris()
 {
     setupTetris();
@@ -114,7 +113,7 @@ void playTetris()
         {
             // If the tetromino cannot move down, place it on the grid
             placeTetromino();
-            clearLines(); // Call the line-clearing function
+            clearLines();     // Call the line-clearing function
             spawnTetromino(); // Spawn a new tetromino
         }
 
@@ -236,7 +235,7 @@ void clearTetrominoPosition()
 
                 if (newX >= 0 && newX < tetrisWidth && newY >= 0 && newY < tetrisHeight)
                 {
-                    grid[newX][newY] = 0; // Clear the cell
+                    grid[newX][newY] = 0;          // Clear the cell
                     updateGrid[newX][newY] = true; // Mark this cell for updating
                 }
             }
@@ -278,5 +277,3 @@ void drawGrid()
         }
     }
 }
-
-
