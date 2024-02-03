@@ -46,11 +46,11 @@ public:
     {
         ballRadius = 20;
         captureRadius = ballRadius + 4;
-        x = 0;//ballRadius + 5;
+        x = ballRadius + 5;
         y = display->height() / 2;
         vx = 10;                                                                     // Initial horizontal velocity
         vy = 0;                                                                     // Initial vertical velocity
-        gravity = 0.9;                                                              // Adjust as needed
+        gravity = 0.8;                                                              // Adjust as needed
         elasticity = 1;                                                             // Adjust as needed (between 0 and 1)
         backgroundBuffer = new uint16_t[(captureRadius * 2) * (captureRadius * 2)]; // Allocate memory for background buffer
     }
@@ -101,7 +101,7 @@ public:
         display->readRect(x - captureRadius, y - captureRadius, captureRadius * 2, captureRadius * 2, backgroundBuffer);
 
         // Draw the ball at the new position
-        display->fillCircle(x, y, ballRadius, TFT_WHITE); // Use a contrasting color for visibility
+        display->fillCircle(x, y, ballRadius, 0x8301); // Use a contrasting color for visibility
     }
 };
 
@@ -109,13 +109,12 @@ void runBouncingBall(VirtualDisplay *display)
 {
     BouncingBall ball(display);
 
-    // Clear the screen and draw the initial background
     display->fillScreen(TFT_BLACK);
     display->drawRGBBitmap(0, 0, (uint16_t *)ballcourt, ballcourt_width, ballcourt_height);
     ball.init();
     while (true)
     {
         ball.draw();
-        display->output(); // Update the display
+        display->output(); // Update the virtual display
     }
 }

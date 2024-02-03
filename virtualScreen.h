@@ -217,9 +217,21 @@ public:
 
     void pushImage(int16_t x, int16_t y, int16_t width, int16_t height, uint16_t *buffer)
     {
-        if (x + width > _width || y + height > _height)
+        if (x < 0)
         {
-            return;
+            x = 0;
+        }
+        if (y < 0)
+        {
+            y = 0;
+        }
+        if (x + width > _width)
+        {
+            x = _width;
+        }
+        if (y + height > _height)
+        {
+            y = _height;
         }
 
         for (int16_t i = 0; i < height; i++)
@@ -237,9 +249,21 @@ public:
 
     void readRect(int16_t x, int16_t y, int16_t width, int16_t height, uint16_t *buffer)
     {
-        if (x < 0 || y < 0 || x + width > _width || y + height > _height)
+        if (x < 0)
         {
-            return;
+            x = 0;
+        }
+        if (y < 0)
+        {
+            y = 0;
+        }
+        if (x + width > _width)
+        {
+            x = _width;
+        }
+        if (y + height > _height)
+        {
+            y = _height;
         }
 
         for (int16_t row = 0; row < height; ++row)
