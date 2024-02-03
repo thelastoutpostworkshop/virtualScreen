@@ -48,7 +48,7 @@ public:
         captureRadius = ballRadius + 4;
         x = ballRadius + 5;
         y = display->height() / 2;
-        vx = 5;                                                                     // Initial horizontal velocity
+        vx = 10;                                                                     // Initial horizontal velocity
         vy = 0;                                                                     // Initial vertical velocity
         gravity = 0.9;                                                              // Adjust as needed
         elasticity = 1;                                                             // Adjust as needed (between 0 and 1)
