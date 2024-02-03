@@ -78,7 +78,7 @@ void playPong()
             (ballX >= tft->width() - paddleWidth - ballSize && ballY >= rightPaddleY && ballY <= rightPaddleY + paddleHeight))
         {
             ballVelocityX = -ballVelocityX;
-            ballVelocityY += random(-2, 3); // Randomize the ball's Y velocity
+            ballVelocityY += (esp_random() % 5) - 2; 
         }
 
         // Draw the updated game state
