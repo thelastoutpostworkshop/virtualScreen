@@ -1,4 +1,7 @@
 #include "virtualScreen.h"
+#include <vector>
+#include <stack>
+#include <utility> // For std::pair
 
 VirtualDisplay *tft;
 
@@ -18,266 +21,253 @@ void setup()
         return;
     }
 
-    playTetris();
+    playMaze();
 }
 
 void loop()
 {
-    // Your loop can remain empty if everything is handled in runBouncingBall
 }
 
-std::vector<std::vector<bool>> updateGrid;
-
-// Define Tetromino shapes
-const int I[4][4] = {
-    {0, 0, 0, 0},
-    {1, 1, 1, 1},
-    {0, 0, 0, 0},
-    {0, 0, 0, 0}};
-
-const int O[4][4] = {
-    {0, 0, 0, 0},
-    {0, 1, 1, 0},
-    {0, 1, 1, 0},
-    {0, 0, 0, 0}};
-
-const int T[4][4] = {
-    {0, 1, 0, 0},
-    {1, 1, 1, 0},
-    {0, 0, 0, 0},
-    {0, 0, 0, 0}};
-
-const int S[4][4] = {
-    {0, 1, 1, 0},
-    {1, 1, 0, 0},
-    {0, 0, 0, 0},
-    {0, 0, 0, 0}};
-
-const int Z[4][4] = {
-    {1, 1, 0, 0},
-    {0, 1, 1, 0},
-    {0, 0, 0, 0},
-    {0, 0, 0, 0}};
-
-const int J[4][4] = {
-    {1, 0, 0, 0},
-    {1, 1, 1, 0},
-    {0, 0, 0, 0},
-    {0, 0, 0, 0}};
-
-const int L[4][4] = {
-    {0, 0, 1, 0},
-    {1, 1, 1, 0},
-    {0, 0, 0, 0},
-    {0, 0, 0, 0}};
-
-// Define colors for each tetromino shape
-const uint16_t tetrominoColors[7] = {
-    TFT_RED,    // Color for shape I
-    TFT_GREEN,  // Color for shape O
-    TFT_BLUE,   // Color for shape T
-    TFT_YELLOW, // Color for shape S
-    TFT_PURPLE, // Color for shape Z
-    TFT_ORANGE, // Color for shape J
-    TFT_CYAN    // Color for shape L
+struct Cell
+{
+    bool visited = false;
+    bool topWall = true;
+    bool bottomWall = true;
+    bool leftWall = true;
+    bool rightWall = true;
 };
 
-const int blockSize = 20; // Size of each Tetris block in pixels
+const int cellSize = 30;   // Global cell size in pixels
+const int paddingSize = 5; // Total padding in pixels, adjust as needed
 
-const int (*tetrominoes[7])[4] = {I, O, T, S, Z, J, L};
+std::vector<std::vector<Cell>> maze;
+int mazeWidth;  // Maze width in cells
+int mazeHeight; // Maze height in cells
 
-int tetrisWidth;                    // Width of the Tetris grid, set in setupTetris
-int tetrisHeight;                   // Height of the Tetris grid, set in setupTetris
-std::vector<std::vector<int>> grid; // Game grid
-
-struct Tetromino
+void playMaze()
 {
-    int x, y;        // Position
-    int shape[4][4]; // Shape
-    uint16_t color;  // Color
-} currentTetromino;
+    tft->fillScreen(TFT_BLACK);
+    setupMaze();
+}
 
 
-void playTetris()
+std::vector<std::pair<int, int>> solveMaze()
 {
-    setupTetris();
+    std::stack<std::pair<int, int>> stack;
+    std::vector<std::vector<bool>> visited(mazeHeight, std::vector<bool>(mazeWidth, false));
+    std::vector<std::pair<int, int>> path;
 
-    while (true)
+    // Start from an edge, for example, (0, 0)
+    stack.push({0, 0});
+    visited[0][0] = true;
+
+    while (!stack.empty())
     {
-        clearTetrominoPosition();
+        auto [x, y] = stack.top();
+        path.push_back({x, y}); // Add to path
 
-        // Attempt to move the tetromino down by incrementing its x position
-        if (canPlace(currentTetromino.x + 1, currentTetromino.y, currentTetromino.shape))
+        // Check if the center is reached
+        if (x == mazeWidth / 2 && y == mazeHeight / 2)
         {
-            currentTetromino.x++;
+            return path; // Return the path to the center
+        }
+
+        // Find unvisited neighbors without walls in between
+        std::vector<std::pair<int, int>> unvisitedNeighbors;
+        if (x > 0 && !visited[y][x - 1] && !maze[y][x].leftWall)
+        {
+            unvisitedNeighbors.push_back({x - 1, y});
+        }
+        if (y > 0 && !visited[y - 1][x] && !maze[y][x].topWall)
+        {
+            unvisitedNeighbors.push_back({x, y - 1});
+        }
+        if (x < mazeWidth - 1 && !visited[y][x + 1] && !maze[y][x].rightWall)
+        {
+            unvisitedNeighbors.push_back({x + 1, y});
+        }
+        if (y < mazeHeight - 1 && !visited[y + 1][x] && !maze[y][x].bottomWall)
+        {
+            unvisitedNeighbors.push_back({x, y + 1});
+        }
+
+        if (!unvisitedNeighbors.empty())
+        {
+            auto [nextX, nextY] = unvisitedNeighbors.back();
+            visited[nextY][nextX] = true;
+            stack.push({nextX, nextY});
         }
         else
         {
-            // If the tetromino cannot move down, place it on the grid
-            placeTetromino();
-            clearLines(); // Call the line-clearing function
-            spawnTetromino(); // Spawn a new tetromino
+            stack.pop();
+            path.pop_back(); // Remove from path if it's a dead end
         }
-
-        placeTetromino();
-        drawGrid();
-
-        tft->output(); // Assuming this function outputs the virtual display to the actual display
     }
+    return path; // In case the center can't be reached, return the attempted path
 }
 
-void clearLines()
+void generateMaze()
 {
-    for (int row = tetrisHeight - 1; row >= 0; row--)
+    std::stack<std::pair<int, int>> stack;
+
+    // Start from the center of the maze
+    int centerX = mazeWidth / 2;
+    int centerY = mazeHeight / 2;
+    maze[centerY][centerX].visited = true;
+    stack.push({centerX, centerY});
+
+    while (!stack.empty())
     {
-        bool rowFilled = true;
+        auto [x, y] = stack.top();
+        std::vector<std::pair<int, int>> unvisitedNeighbors;
 
-        // Check if the row is filled
-        for (int col = 0; col < tetrisWidth; col++)
+        // Check unvisited neighbors
+        if (x > 0 && !maze[y][x - 1].visited)
         {
-            if (grid[row][col] == 0)
-            {
-                rowFilled = false;
-                break;
-            }
+            unvisitedNeighbors.push_back({x - 1, y});
+        }
+        if (y > 0 && !maze[y - 1][x].visited)
+        {
+            unvisitedNeighbors.push_back({x, y - 1});
+        }
+        if (x < mazeWidth - 1 && !maze[y][x + 1].visited)
+        {
+            unvisitedNeighbors.push_back({x + 1, y});
+        }
+        if (y < mazeHeight - 1 && !maze[y + 1][x].visited)
+        {
+            unvisitedNeighbors.push_back({x, y + 1});
         }
 
-        // Clear the row if it's filled
-        if (rowFilled)
+        if (!unvisitedNeighbors.empty())
         {
-            for (int y = row; y > 0; y--)
+            // Randomly select a neighbor
+            auto [nextX, nextY] = unvisitedNeighbors[esp_random() % unvisitedNeighbors.size()];
+
+            // Remove the wall between the current cell and the chosen cell
+            if (nextX == x + 1)
             {
-                for (int x = 0; x < tetrisWidth; x++)
-                {
-                    grid[y][x] = grid[y - 1][x];
-                }
+                maze[y][x].rightWall = false;
+                maze[nextY][nextX].leftWall = false;
+            }
+            else if (nextX == x - 1)
+            {
+                maze[y][x].leftWall = false;
+                maze[nextY][nextX].rightWall = false;
+            }
+            else if (nextY == y + 1)
+            {
+                maze[y][x].bottomWall = false;
+                maze[nextY][nextX].topWall = false;
+            }
+            else if (nextY == y - 1)
+            {
+                maze[y][x].topWall = false;
+                maze[nextY][nextX].bottomWall = false;
             }
 
-            // Set the top row to empty
-            for (int x = 0; x < tetrisWidth; x++)
-            {
-                grid[0][x] = 0;
-            }
-
-            // Since we moved the rows down, we need to check the same row again
-            row++;
+            maze[nextY][nextX].visited = true;
+            stack.push({nextX, nextY});
+        }
+        else
+        {
+            stack.pop();
         }
     }
 }
-
-// Initialize a new tetromino at the top of the grid
-void spawnTetromino()
+void drawMaze(const std::vector<std::pair<int, int>> &path)
 {
-    int shapeIndex = esp_random() % 7; // Random index for shape
-    memcpy(currentTetromino.shape, tetrominoes[shapeIndex], sizeof(currentTetromino.shape));
-    currentTetromino.x = 0; // Start from the left side (which is now the top)
-
-    // Choose a random y position within the grid's width
-    // Subtract 4 to ensure the entire tetromino shape fits within the grid
-    currentTetromino.y = esp_random() % (tetrisHeight - 4);
-
-    currentTetromino.color = tetrominoColors[shapeIndex];
-}
-
-// Check if the tetromino can be placed at a position in the grid
-bool canPlace(int x, int y, int shape[4][4])
-{
-    for (int i = 0; i < 4; i++)
+    for (int y = 0; y < mazeHeight; y++)
     {
-        for (int j = 0; j < 4; j++)
+        for (int x = 0; x < mazeWidth; x++)
         {
-            if (shape[i][j])
-            {
-                int newX = x + j; // newX represents vertical movement in the rotated grid
-                int newY = y + i; // newY represents horizontal movement
+            // Calculate the top left corner of the cell
+            int x0 = x * cellSize;
+            int y0 = y * cellSize;
 
-                // Check for out-of-bounds or collision with existing blocks
-                if (newX < 0 || newX >= tetrisWidth || newY < 0 || newY >= tetrisHeight || grid[newX][newY])
-                {
-                    return false;
-                }
+            // Draw the walls of the cell
+            if (maze[y][x].topWall)
+            {
+                tft->drawLine(x0, y0, x0 + cellSize, y0, TFT_WHITE); // Top wall
+            }
+            if (maze[y][x].bottomWall)
+            {
+                tft->drawLine(x0, y0 + cellSize, x0 + cellSize, y0 + cellSize, TFT_WHITE); // Bottom wall
+            }
+            if (maze[y][x].leftWall)
+            {
+                tft->drawLine(x0, y0, x0, y0 + cellSize, TFT_WHITE); // Left wall
+            }
+            if (maze[y][x].rightWall)
+            {
+                tft->drawLine(x0 + cellSize, y0, x0 + cellSize, y0 + cellSize, TFT_WHITE); // Right wall
             }
         }
     }
-    return true;
-}
 
-// Place the tetromino on the grid
-void placeTetromino()
-{
-    for (int i = 0; i < 4; i++)
+    // Draw the solution path in yellow
+    for (size_t i = 0; i < path.size() - 1; ++i)
     {
-        for (int j = 0; j < 4; j++)
-        {
-            if (currentTetromino.shape[i][j])
-            {
-                int newX = currentTetromino.x + j;
-                int newY = currentTetromino.y + i;
+        // Coordinates of the current cell
+        int x0 = path[i].first * cellSize + cellSize / 2;
+        int y0 = path[i].second * cellSize + cellSize / 2;
 
-                if (newX >= 0 && newX < tetrisWidth && newY >= 0 && newY < tetrisHeight)
-                {
-                    grid[newX][newY] = currentTetromino.color;
-                    updateGrid[newX][newY] = true; // Mark this cell for updating
-                }
-            }
+        // Coordinates of the next cell
+        int x1 = path[i + 1].first * cellSize + cellSize / 2;
+        int y1 = path[i + 1].second * cellSize + cellSize / 2;
+
+        // Check if the next cell is a direct neighbor of the current cell
+        bool isNeighbor = (path[i].first == path[i + 1].first && abs(path[i].second - path[i + 1].second) == 1) ||
+                          (path[i].second == path[i + 1].second && abs(path[i].first - path[i + 1].first) == 1);
+
+        // Draw line only if the next cell is a neighbor
+        if (isNeighbor)
+        {
+            tft->drawLine(x0, y0, x1, y1, TFT_YELLOW);
+            tft->output();
         }
     }
-}
-
-void clearTetrominoPosition()
-{
-    for (int i = 0; i < 4; i++)
+    if (!path.empty())
     {
-        for (int j = 0; j < 4; j++)
-        {
-            if (currentTetromino.shape[i][j])
-            {
-                int newX = currentTetromino.x + j;
-                int newY = currentTetromino.y + i;
+        // Get the coordinates of the last cell in the path
+        auto [lastX, lastY] = path.back();
+        int centerX = lastX * cellSize + cellSize / 2;
+        int centerY = lastY * cellSize + cellSize / 2;
 
-                if (newX >= 0 && newX < tetrisWidth && newY >= 0 && newY < tetrisHeight)
-                {
-                    grid[newX][newY] = 0; // Clear the cell
-                    updateGrid[newX][newY] = true; // Mark this cell for updating
-                }
-            }
-        }
+        // Draw a yellow circle at the end of the path
+        int radius = cellSize / 4; // Radius of the circle
+        tft->fillCircle(centerX, centerY, radius, TFT_YELLOW);
     }
+
+    tft->output();
 }
 
-void setupTetris()
+void setupMaze()
 {
-    tetrisWidth = tft->width() / blockSize;
-    tetrisHeight = tft->height() / blockSize;
-    grid = std::vector<std::vector<int>>(tetrisWidth, std::vector<int>(tetrisHeight, 0));
-    updateGrid = std::vector<std::vector<bool>>(tetrisWidth, std::vector<bool>(tetrisHeight, true)); // Initially, all cells need to be drawn
+    // Adjusted dimensions to account for padding
+    mazeWidth = (tft->width() - paddingSize) / cellSize;   // Ensure odd number
+    mazeHeight = (tft->height() - paddingSize) / cellSize; // Ensure odd number
 
-    spawnTetromino();
-}
-
-// Modify drawGrid to only redraw cells that have changed
-void drawGrid()
-{
-    for (int x = 0; x < tetrisWidth; x++)
+    // Ensure dimensions are odd numbers
+    if (mazeWidth % 2 == 0)
     {
-        for (int y = 0; y < tetrisHeight; y++)
-        {
-            if (updateGrid[x][y]) // Only update cells marked for redraw
-            {
-                int drawX = x * blockSize;
-                int drawY = y * blockSize;
-                uint16_t color = grid[x][y] ? grid[x][y] : TFT_BLACK;
-                tft->fillRect(drawX, drawY, blockSize, blockSize, color);
-
-                if (!grid[x][y]) // Optionally, redraw the grid lines for empty cells
-                {
-                    tft->drawRect(drawX, drawY, blockSize, blockSize, 0x4a89);
-                }
-
-                updateGrid[x][y] = false; // Reset the update flag
-            }
-        }
+        mazeWidth--;
     }
+    if (mazeHeight % 2 == 0)
+    {
+        mazeHeight--;
+    }
+
+    // Allocate memory for the maze grid
+    maze.resize(mazeHeight, std::vector<Cell>(mazeWidth));
+
+    // Generate and draw the maze
+    generateMaze();
+    auto path = solveMaze();
+
+    drawMaze(path);
 }
+
+
 
 

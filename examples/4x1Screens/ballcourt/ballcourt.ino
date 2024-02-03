@@ -25,7 +25,6 @@ void setup()
 
 void loop()
 {
-    // Your loop can remain empty if everything is handled in runBouncingBall
 }
 
 class BouncingBall

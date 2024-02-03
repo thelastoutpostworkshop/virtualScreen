@@ -24,7 +24,6 @@ void setup()
 
 void loop()
 {
-    // Your loop can remain empty if everything is handled in runBouncingBall
 }
 
 int gridWidth;  // Width of the grid
