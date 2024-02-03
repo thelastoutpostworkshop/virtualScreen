@@ -35,7 +35,7 @@ void setup()
 }
 void loop()
 {
-    tft->highlightArea(240, 0, clock2_width, clock2_height, 0.5f);
+    tft->highlightArea(360, 120, 50, 0.5f);
 
     tft->output();
     tft->pushImage(240, 0, clock2_width, clock2_height, (uint16_t *)clock2);

@@ -237,6 +237,30 @@ public:
         }
     }
 
+    // Method to highlight a circular area of the canvas with adjustable intensity
+    void highlightArea(int16_t centerX, int16_t centerY, int16_t radius, float intensity)
+    {
+        for (int16_t y = centerY - radius; y <= centerY + radius; ++y)
+        {
+            for (int16_t x = centerX - radius; x <= centerX + radius; ++x)
+            {
+                // Calculate distance from the center of the circle
+                int16_t dx = x - centerX;
+                int16_t dy = y - centerY;
+                if (dx * dx + dy * dy <= radius * radius)
+                {
+                    // The pixel is inside the circle
+                    if (x >= 0 && x < _width && y >= 0 && y < _height)
+                    {
+                        uint16_t originalColor = canvas[y * _width + x];
+                        uint16_t highlightedColor = adjustBrightness(originalColor, intensity);
+                        drawPixel(x, y, highlightedColor);
+                    }
+                }
+            }
+        }
+    }
+
     ~VirtualDisplay()
     {
         if (canvas)
