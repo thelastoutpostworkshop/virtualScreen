@@ -1,5 +1,4 @@
 #include "virtualScreen.h"
-#include "fonts/BebasNeue_Regular13pt7b.h"
 
 VirtualDisplay *tft;
 
@@ -19,7 +18,7 @@ void setup()
         return;
     }
 
-    gameOfLife();
+    playTetris();
 }
 
 void loop()
@@ -27,204 +26,249 @@ void loop()
     // Your loop can remain empty if everything is handled in runBouncingBall
 }
 
-int gridWidth;  // Width of the grid
-int gridHeight; // Height of the grid
-bool **currentGrid;
-bool **nextGrid;
-const int squareSize = 10;
-const int statsWidth = 240; // Width of the stats area on the left, adjust as needed
-int aliveCellsCount = 0;
-int changeRate = 0;
-const uint16_t statsBgColor = 0x3186;
-std::vector<int> populationHistory;
+// Define Tetromino shapes
+const int I[4][4] = {
+    {0, 0, 0, 0},
+    {1, 1, 1, 1},
+    {0, 0, 0, 0},
+    {0, 0, 0, 0}};
 
-void gameOfLife()
+const int O[4][4] = {
+    {0, 0, 0, 0},
+    {0, 1, 1, 0},
+    {0, 1, 1, 0},
+    {0, 0, 0, 0}};
+
+const int T[4][4] = {
+    {0, 1, 0, 0},
+    {1, 1, 1, 0},
+    {0, 0, 0, 0},
+    {0, 0, 0, 0}};
+
+const int S[4][4] = {
+    {0, 1, 1, 0},
+    {1, 1, 0, 0},
+    {0, 0, 0, 0},
+    {0, 0, 0, 0}};
+
+const int Z[4][4] = {
+    {1, 1, 0, 0},
+    {0, 1, 1, 0},
+    {0, 0, 0, 0},
+    {0, 0, 0, 0}};
+
+const int J[4][4] = {
+    {1, 0, 0, 0},
+    {1, 1, 1, 0},
+    {0, 0, 0, 0},
+    {0, 0, 0, 0}};
+
+const int L[4][4] = {
+    {0, 0, 1, 0},
+    {1, 1, 1, 0},
+    {0, 0, 0, 0},
+    {0, 0, 0, 0}};
+
+// Define colors for each tetromino shape
+const uint16_t tetrominoColors[7] = {
+    TFT_RED,    // Color for shape I
+    TFT_GREEN,  // Color for shape O
+    TFT_BLUE,   // Color for shape T
+    TFT_YELLOW, // Color for shape S
+    TFT_PURPLE, // Color for shape Z
+    TFT_ORANGE, // Color for shape J
+    TFT_CYAN    // Color for shape L
+};
+
+const int blockSize = 20; // Size of each Tetris block in pixels
+
+const int (*tetrominoes[7])[4] = {I, O, T, S, Z, J, L};
+
+int tetrisWidth;                    // Width of the Tetris grid, set in setupTetris
+int tetrisHeight;                   // Height of the Tetris grid, set in setupTetris
+std::vector<std::vector<int>> grid; // Game grid
+
+struct Tetromino
 {
-    tft->fillScreen(TFT_BLACK);
-    setupGameOfLife(); // Initialize the game
-    for (int i = 0; i < 1000; i++)
-    {                       // Run for 1000 generations
-        updateGameOfLife(); // Update the grid
-        drawGameOfLife();   // Draw the grid
-        drawStats(i);       // Draw the stats with the current generation
-        drawPopulationGraph();
+    int x, y;        // Position
+    int shape[4][4]; // Shape
+    uint16_t color;  // Color
+} currentTetromino;
 
-        delay(100); // Delay between generations
-    }
-    cleanupGameOfLife(); // Clean up the dynamically allocated memory
-}
 
-void setupGameOfLife()
+void playTetris()
 {
-    gridWidth = (tft->width() - statsWidth) / squareSize; // Adjusted for stats area
-    gridHeight = tft->height() / squareSize;
+    setupTetris();
 
-    // Allocate memory for the grids
-    currentGrid = new bool *[gridHeight];
-    nextGrid = new bool *[gridHeight];
-    for (int y = 0; y < gridHeight; y++)
+    while (true)
     {
-        currentGrid[y] = new bool[gridWidth];
-        nextGrid[y] = new bool[gridWidth];
-    }
+        clearTetrominoPosition();
 
-    // Randomly initialize the currentGrid
-    for (int y = 0; y < gridHeight; y++)
-    {
-        for (int x = 0; x < gridWidth; x++)
+        // Attempt to move the tetromino down by incrementing its x position
+        if (canPlace(currentTetromino.x + 1, currentTetromino.y, currentTetromino.shape))
         {
-            currentGrid[y][x] = esp_random() % 2; // Randomly alive or dead
+            currentTetromino.x++;
         }
-    }
-}
-
-void cleanupGameOfLife()
-{
-    for (int y = 0; y < gridHeight; y++)
-    {
-        delete[] currentGrid[y];
-        delete[] nextGrid[y];
-    }
-    delete[] currentGrid;
-    delete[] nextGrid;
-}
-
-void updateGameOfLife()
-{
-    int newAliveCellsCount = 0;
-    int newChangeRate = 0;
-
-    // Apply Game of Life rules to update the grid
-    for (int y = 0; y < gridHeight; y++)
-    {
-        for (int x = 0; x < gridWidth; x++)
+        else
         {
-            int aliveNeighbors = 0;
+            // If the tetromino cannot move down, place it on the grid
+            placeTetromino();
+            // clearLines(); // Call the line-clearing function
+            spawnTetromino(); // Spawn a new tetromino
+        }
 
-            // Count alive neighbors
-            for (int i = -1; i <= 1; i++)
+        placeTetromino();
+        // Draw the grid and current tetromino
+        drawGrid();
+
+        tft->output();
+    }
+}
+
+void clearLines()
+{
+    for (int row = tetrisHeight - 1; row >= 0; row--)
+    {
+        bool rowFilled = true;
+
+        // Check if the row is filled
+        for (int col = 0; col < tetrisWidth; col++)
+        {
+            if (grid[row][col] == 0)
             {
-                for (int j = -1; j <= 1; j++)
+                rowFilled = false;
+                break;
+            }
+        }
+
+        // Clear the row if it's filled
+        if (rowFilled)
+        {
+            for (int y = row; y > 0; y--)
+            {
+                for (int x = 0; x < tetrisWidth; x++)
                 {
-                    if (i == 0 && j == 0)
-                    {
-                        continue; // Skip the current cell
-                    }
-                    int nx = x + j;
-                    int ny = y + i;
-                    if (nx >= 0 && nx < gridWidth && ny >= 0 && ny < gridHeight && currentGrid[ny][nx])
-                    {
-                        aliveNeighbors++;
-                    }
+                    grid[y][x] = grid[y - 1][x];
                 }
             }
 
-            // Apply the rules of the Game of Life
-            bool newState = currentGrid[y][x];
-            if (currentGrid[y][x] && (aliveNeighbors < 2 || aliveNeighbors > 3))
+            // Set the top row to empty
+            for (int x = 0; x < tetrisWidth; x++)
             {
-                newState = false; // Cell dies
-            }
-            else if (!currentGrid[y][x] && aliveNeighbors == 3)
-            {
-                newState = true; // Cell becomes alive
+                grid[0][x] = 0;
             }
 
-            if (newState != currentGrid[y][x])
-            {
-                newChangeRate++; // Increment change rate if cell state changes
-            }
-
-            if (newState)
-            {
-                newAliveCellsCount++; // Count alive cells
-            }
-
-            nextGrid[y][x] = newState;
+            // Since we moved the rows down, we need to check the same row again
+            row++;
         }
     }
+}
 
-    // Copy nextGrid to currentGrid for the next iteration and update stats
-    for (int y = 0; y < gridHeight; y++)
+// Initialize a new tetromino at the top of the grid
+void spawnTetromino()
+{
+    int shapeIndex = esp_random() % 7; // Random index for shape
+    memcpy(currentTetromino.shape, tetrominoes[shapeIndex], sizeof(currentTetromino.shape));
+    currentTetromino.x = 0; // Start from the left side (which is now the top)
+
+    // Choose a random y position within the grid's width
+    // Subtract 4 to ensure the entire tetromino shape fits within the grid
+    currentTetromino.y = esp_random() % (tetrisHeight - 4);
+
+    currentTetromino.color = tetrominoColors[shapeIndex];
+}
+
+// Check if the tetromino can be placed at a position in the grid
+bool canPlace(int x, int y, int shape[4][4])
+{
+    for (int i = 0; i < 4; i++)
     {
-        for (int x = 0; x < gridWidth; x++)
+        for (int j = 0; j < 4; j++)
         {
-            currentGrid[y][x] = nextGrid[y][x];
+            if (shape[i][j])
+            {
+                int newX = x + j; // newX represents vertical movement in the rotated grid
+                int newY = y + i; // newY represents horizontal movement
+
+                // Check for out-of-bounds or collision with existing blocks
+                if (newX < 0 || newX >= tetrisWidth || newY < 0 || newY >= tetrisHeight || grid[newX][newY])
+                {
+                    return false;
+                }
+            }
         }
     }
-
-    aliveCellsCount = newAliveCellsCount;
-    populationHistory.push_back(newAliveCellsCount);
-    changeRate = newChangeRate;
+    return true;
 }
 
-void drawGameOfLife()
+// Place the tetromino on the grid
+void placeTetromino()
 {
-    for (int y = 0; y < gridHeight; y++)
+    for (int i = 0; i < 4; i++)
     {
-        for (int x = 0; x < gridWidth; x++)
+        for (int j = 0; j < 4; j++)
         {
-            uint16_t color = currentGrid[y][x] ? 0x07e0 : TFT_BLACK;
-            tft->fillRect(x * squareSize + statsWidth, y * squareSize, squareSize, squareSize, color);
+            if (currentTetromino.shape[i][j])
+            {
+                int newX = currentTetromino.x + j; // Calculate the correct x position
+                int newY = currentTetromino.y + i; // Calculate the correct y position
+
+                // Check if the calculated position is within the bounds of the grid
+                if (newX >= 0 && newX < tetrisWidth && newY >= 0 && newY < tetrisHeight)
+                    grid[newX][newY] = currentTetromino.color;
+            }
         }
     }
-    tft->output();
 }
-void drawPopulationGraph()
+
+void setupTetris()
 {
-    int graphWidth = statsWidth - 10;              // Width of the graph, leaving some margin
-    int graphHeight = 50;                          // Height of the graph, adjust as needed
-    int graphX = 5;                                // X position of the graph
-    int graphY = tft->height() - graphHeight - 10; // Y position, placed at the bottom
-    int titleHeight = 15;                          // Height for the title area
+    tetrisWidth = tft->width() / blockSize;   // Use the full width of the tft
+    tetrisHeight = tft->height() / blockSize; // Height based on the tft height
+    grid = std::vector<std::vector<int>>(tetrisWidth, std::vector<int>(tetrisHeight, 0));
 
-    // Clear the area for the graph and title
-    tft->fillRect(graphX, graphY - titleHeight, graphWidth, graphHeight + titleHeight, statsBgColor);
+    spawnTetromino();
+}
 
-    // Draw the title for the graph
-    tft->setTextColor(0x07fb);
-    tft->setCursor(8, graphY - titleHeight); // Set position for the title
-    tft->print("Population Over Time");
-
-    // Check if there is enough data to draw the graph
-    if (populationHistory.size() < 2)
-        return;
-
-    // Calculate the scaling factor for the graph
-    int maxPopulation = *std::max_element(populationHistory.begin(), populationHistory.end());
-    float scaleY = static_cast<float>(graphHeight) / maxPopulation;
-    float scaleX = static_cast<float>(graphWidth) / (populationHistory.size() - 1);
-
-    // Draw the graph line
-    for (size_t i = 0; i < populationHistory.size() - 1; ++i)
+void drawGrid()
+{
+    for (int x = 0; x < tetrisWidth; x++)
     {
-        int x0 = graphX + i * scaleX;
-        int y0 = graphY + graphHeight - populationHistory[i] * scaleY;
-        int x1 = graphX + (i + 1) * scaleX;
-        int y1 = graphY + graphHeight - populationHistory[i + 1] * scaleY;
-        tft->drawLine(x0, y0, x1, y1, TFT_YELLOW);
+        for (int y = 0; y < tetrisHeight; y++)
+        {
+            int drawX = x * blockSize; // Corresponds to tft's width
+            int drawY = y * blockSize; // Corresponds to tft's height
+
+            if (grid[x][y])
+            {
+                tft->fillRect(drawX, drawY, blockSize, blockSize, grid[x][y]);
+            }
+            else
+            {
+                tft->fillRect(drawX, drawY, blockSize, blockSize, TFT_BLACK);
+                tft->drawRect(drawX, drawY, blockSize, blockSize, 0x4a89);
+            }
+        }
     }
 }
 
-void drawStats(int generation)
+void clearTetrominoPosition()
 {
-    // Clear the stats area
-    tft->fillRect(0, 0, statsWidth, tft->height(), statsBgColor);
+    for (int i = 0; i < 4; i++)
+    {
+        for (int j = 0; j < 4; j++)
+        {
+            if (currentTetromino.shape[i][j])
+            {
+                int newX = currentTetromino.x + j;
+                int newY = currentTetromino.y + i;
 
-    tft->setTextColor(0x07fb);
-    tft->setFont(&BebasNeue_Regular13pt7b);
-    tft->setCursor(8, 30); 
-    tft->print("Generation:");
-    tft->setTextColor(TFT_WHITE);
-    tft->print(generation);
-    tft->setTextColor(0x07fb);
-    tft->setCursor(8, 60); 
-    tft->print("Alive: ");
-    tft->setTextColor(TFT_WHITE);
-    tft->print(aliveCellsCount);
-    tft->setCursor(8, 90); 
-    tft->setTextColor(0x07fb);
-    tft->print("Change: ");
-    tft->setTextColor(TFT_WHITE);
-    tft->print(changeRate);
+                if (newX >= 0 && newX < tetrisWidth && newY >= 0 && newY < tetrisHeight)
+                {
+                    grid[newX][newY] = 0; // Clear the cell
+                }
+            }
+        }
+    }
 }
+
