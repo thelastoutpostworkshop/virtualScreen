@@ -1,5 +1,5 @@
 #include "virtualScreen.h"
-#include "images/ballcourt.h" 
+#include "fonts/Fun_Games20pt7b.h"
 
 VirtualDisplay *tft;
 
@@ -19,8 +19,7 @@ void setup()
         return;
     }
 
-    // Start the bouncing ball animation
-    runBouncingBall();
+    playPong();
 }
 
 void loop()
@@ -28,94 +27,93 @@ void loop()
     // Your loop can remain empty if everything is handled in runBouncingBall
 }
 
-class BouncingBall
+const int messageAreaWidth = 240; // Width of the message area on the left
+const int scoreAreaHeight = 50;   // Height of the score area at the top
+
+void playPong()
 {
-private:
-    float x, y;        // Ball's position
-    float vx, vy;      // Ball's velocity
-    float gravity;     // Gravity effect
-    float elasticity;  // Bounce reduction factor
-    int ballRadius;    // Ball radius
-    int captureRadius; // Slightly larger to ensure clean edges
-    int rotation = 0;
+    const int paddleWidth = 20;
+    const int paddleHeight = 50;
+    const int ballSize = 8;
+    int ballX, ballY;                           // Ball position
+    int ballVelocityX = 12, ballVelocityY = 12; // Ball velocity
+    int leftPaddleY, rightPaddleY;              // Paddle positions
 
-    uint16_t *backgroundBuffer; // Buffer for storing background
+    // Initialize ball and paddles positions
+    ballX = messageAreaWidth + (tft->width() - messageAreaWidth) / 2;
+    ballY = scoreAreaHeight + (tft->height() - scoreAreaHeight) / 2;
+    leftPaddleY = rightPaddleY = scoreAreaHeight + (tft->height() - scoreAreaHeight - paddleHeight) / 2;
 
-public:
-    BouncingBall() 
-    {
-        ballRadius = 20;
-        captureRadius = ballRadius + 4;
-        x = ballRadius + 5;
-        y = tft->height() / 2;
-        vx = 10;                                                                    // Initial horizontal velocity
-        vy = 0;                                                                     // Initial vertical velocity
-        gravity = 0.8;                                                              // Adjust as needed
-        elasticity = 1;                                                             // Adjust as needed (between 0 and 1)
-        backgroundBuffer = new uint16_t[(captureRadius * 2) * (captureRadius * 2)]; // Allocate memory for background buffer
-    }
-
-    ~BouncingBall()
-    {
-        if (backgroundBuffer)
-        {
-            delete[] backgroundBuffer; // Free memory when done
-        }
-    }
-
-    void update()
-    {
-        // Logic to update ball position and handle collisions
-        vy += gravity;
-        x += vx;
-        y += vy;
-
-        if (x <= ballRadius || x >= tft->width() - ballRadius)
-        {
-            vx = -vx;
-            x += vx;
-        }
-
-        if (y <= ballRadius || y >= tft->height() - ballRadius)
-        {
-            vy = -vy * elasticity;
-            y += vy;
-        }
-        rotation += vx / 3.0; // Adjust rotation speed based on velocity
-    }
-
-    void init()
-    {
-        tft->readRect(x - captureRadius, y - captureRadius, captureRadius * 2, captureRadius * 2, backgroundBuffer);
-    }
-
-    void draw()
-    {
-
-        // Erase the ball at the current position by restoring the background
-        tft->pushImage(x - captureRadius, y - captureRadius, captureRadius * 2, captureRadius * 2, backgroundBuffer);
-
-        // Update position for the next frame
-        update();
-
-        // Capture the background at the new position, slightly larger area
-        tft->readRect(x - captureRadius, y - captureRadius, captureRadius * 2, captureRadius * 2, backgroundBuffer);
-
-        // Draw the ball at the new position
-        tft->fillCircle(x, y, ballRadius, 0xf5e5);
-    }
-};
-
-void runBouncingBall()
-{
-    BouncingBall ball;
-
-    tft->fillScreen(TFT_BLACK);
-    tft->drawRGBBitmap(0, 0, (uint16_t *)ballcourt, ballcourt_width, ballcourt_height);
-    ball.init();
+    tft->fillScreen(TFT_BLACK); // Clear the screen
+    drawScores(10, 10);
+    drawMessage("Pong");
+    tft->output();
     while (true)
     {
-        ball.draw();
-        tft->output(); // Update the virtual display
+        // Clear the previous positions of the ball and paddles
+        tft->fillRect(messageAreaWidth, leftPaddleY, paddleWidth, paddleHeight, TFT_BLACK);            // Clear Left paddle
+        tft->fillRect(tft->width() - paddleWidth, rightPaddleY, paddleWidth, paddleHeight, TFT_BLACK); // Clear Right paddle
+        tft->fillCircle(ballX, ballY, ballSize, TFT_BLACK);
+
+        // Update ball position
+        ballX += ballVelocityX;
+        ballY += ballVelocityY;
+
+        // Check for ball collisions with the top and bottom of the screen
+        if (ballY <= scoreAreaHeight || ballY >= tft->height() - ballSize)
+        {
+            ballVelocityY = -ballVelocityY;
+        }
+
+        // Update paddles position to follow the ball
+        leftPaddleY = ballY - paddleHeight / 2;
+        rightPaddleY = ballY - paddleHeight / 2;
+
+        // Keep paddles within the screen bounds
+        leftPaddleY = max(scoreAreaHeight, min(tft->height() - paddleHeight, leftPaddleY));
+        rightPaddleY = max(scoreAreaHeight, min(tft->height() - paddleHeight, rightPaddleY));
+
+        // Check for ball collisions with the paddles
+        if ((ballX <= messageAreaWidth + paddleWidth && ballY >= leftPaddleY && ballY <= leftPaddleY + paddleHeight) ||
+            (ballX >= tft->width() - paddleWidth - ballSize && ballY >= rightPaddleY && ballY <= rightPaddleY + paddleHeight))
+        {
+            ballVelocityX = -ballVelocityX;
+            ballVelocityY += random(-2, 3); // Randomize the ball's Y velocity
+        }
+
+        // Draw the updated game state
+        tft->fillRect(messageAreaWidth, leftPaddleY, paddleWidth, paddleHeight, 0xf818);            // Left paddle
+        tft->fillRect(tft->width() - paddleWidth, rightPaddleY, paddleWidth, paddleHeight, 0x07e6); // Right paddle
+        tft->fillCircle(ballX, ballY, ballSize, 0xe7e0);                                            // Ball
+
+        // Update the display
+        tft->output();
     }
+}
+
+void drawScores(int leftScore, int rightScore)
+{
+    // Clear the score area
+    tft->fillRoundRect(messageAreaWidth, 0, tft->width() - messageAreaWidth, scoreAreaHeight, 20, 0x17bb);
+
+    // Set text properties and display scores
+    tft->setTextColor(TFT_BLACK);
+    tft->setFont(&Fun_Games20pt7b);
+    tft->setCursor(messageAreaWidth + 3, 35);
+    tft->print("Player 1: ");
+    tft->print(leftScore);
+    tft->setCursor(721, 35);
+    tft->print("Player 2: ");
+    tft->print(rightScore);
+}
+
+void drawMessage(const String &message)
+{
+    // Clear the message area
+    tft->fillRect(0, 0, messageAreaWidth, tft->height(), TFT_BLACK);
+
+    // Set text properties and display the message
+    tft->setTextColor(TFT_WHITE);
+    tft->setCursor(55, 125);
+    tft->print(message);
 }
