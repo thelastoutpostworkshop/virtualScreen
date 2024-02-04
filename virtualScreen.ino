@@ -29,7 +29,7 @@ void setup()
     tft->pushImage(240, 0, clock2_width, clock2_height, (uint16_t *)clock2);
     tft->pushImage(480, 0, clock3_width, clock3_height, (uint16_t *)clock3);
     tft->setFont(&SecondWorldDemoRegular40pt7b);
-    tft->setTextColor(0x063f);
+    tft->setTextColor(0xef48);
     tft->setCursor(50, 385);
     tft->print("Very Strange Clocks");
 }
