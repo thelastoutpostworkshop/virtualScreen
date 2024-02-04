@@ -12,12 +12,7 @@ void setup()
     screens.addRow({{16, 0}, {15, 0}});
 
     tft = new VirtualDisplay(screens.width(), screens.height(), &screens);
-
-    if (!tft->begin())
-    {
-
-        return;
-    }
+    tft->begin();
 
     tft->setFont(&xtrchr30pt7b);
     tft->setTextColor(0x3fa7);

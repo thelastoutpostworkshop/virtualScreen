@@ -17,12 +17,8 @@ void setup()
     screens.addRow({{16, 0}, {11, 0}, {9, 0}});
 
     tft = new VirtualDisplay(screens.width(), screens.height(), &screens);
+    tft->begin();
 
-    if (!tft->begin())
-    {
-        Serial.println("Memory Allocation for virtual screen failed");
-        return;
-    }
 
     tft->fillScreen(TFT_BLACK);
     tft->pushImage(0, 0, clock1_width, clock1_height, (uint16_t *)clock1);

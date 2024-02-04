@@ -108,6 +108,11 @@ private:
     bool _ready = false;
     ScreenBuilder *screenBuilder;
 
+    inline bool checkReady() const
+    {
+        return _ready;
+    }
+
     void clearDisplayBuffer()
     {
         memset(canvas, 0, displayBufferSize);
@@ -216,6 +221,9 @@ public:
 
     void output()
     {
+        if (!checkReady())
+            return;
+
         const auto &screens = screenBuilder->getScreens();
 
         for (const auto &screen : screens)
@@ -235,6 +243,9 @@ public:
     // Method to highlight a specified area of the canvas with adjustable intensity
     void highlightArea(int16_t x, int16_t y, int16_t width, int16_t height, float intensity)
     {
+        if (!checkReady())
+            return;
+
         for (int16_t row = y; row < y + height; ++row)
         {
             for (int16_t col = x; col < x + width; ++col)
@@ -257,6 +268,9 @@ public:
     // Method to highlight a circular area of the canvas with adjustable intensity
     void highlightArea(int16_t centerX, int16_t centerY, int16_t radius, float intensity)
     {
+        if (!checkReady())
+            return;
+
         for (int16_t y = centerY - radius; y <= centerY + radius; ++y)
         {
             for (int16_t x = centerX - radius; x <= centerX + radius; ++x)
@@ -283,6 +297,7 @@ public:
         if (canvas)
         {
             free(canvas);
+            free(displayBuffer);
         }
     }
 
@@ -302,6 +317,9 @@ public:
 
     void pushImage(int16_t x, int16_t y, int16_t width, int16_t height, uint16_t *buffer)
     {
+        if (!checkReady())
+            return;
+
         if (x < 0)
         {
             x = 0;
@@ -334,6 +352,9 @@ public:
 
     void readRect(int16_t x, int16_t y, int16_t width, int16_t height, uint16_t *buffer)
     {
+        if (!checkReady())
+            return;
+
         if (x < 0)
         {
             x = 0;
@@ -363,6 +384,9 @@ public:
     }
     void drawPixel(int16_t x, int16_t y, uint16_t color) override
     {
+        if (!checkReady())
+            return;
+
         if ((x < 0) || (y < 0) || (x >= _width) || (y >= _height))
         {
             return;

@@ -14,12 +14,7 @@ void setup()
 
 
     tft = new VirtualDisplay(screens.width(), screens.height(), &screens);
-
-    if (!tft->begin())
-    {
-        Serial.println("Memory Allocation for virtual screen failed");
-        return;
-    }
+    tft->begin();
 
     tft->fillScreen(TFT_BLACK);
     tft->drawRGBBitmap(0, 0, (uint16_t *)night_earth, night_earth_width, night_earth_height);
