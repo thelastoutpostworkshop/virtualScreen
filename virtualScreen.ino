@@ -1,5 +1,5 @@
-#include <virtualScreen.h>
-#include "xtrchr30pt7b.h"
+#include "src/virtualScreen.h"
+#include "fonts/xtrchr30pt7b.h"
 
 VirtualDisplay *tft;
 ScreenBuilder screens;
@@ -15,13 +15,13 @@ void setup()
 
     if (!tft->begin())
     {
-        Serial.println("Memory Allocation for virtual screen failed");
+
         return;
     }
 
     tft->setFont(&xtrchr30pt7b);
     tft->setTextColor(0x3fa7);
-    tft->setCursor(0,90);
+    tft->setCursor(0, 90);
     tft->print("Virtual Display with Adafruit GFX");
     tft->output();
 }
@@ -29,4 +29,3 @@ void setup()
 void loop()
 {
 }
-

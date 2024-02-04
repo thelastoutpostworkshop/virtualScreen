@@ -85,6 +85,15 @@ public:
     {
         return virtualScreenHeight;
     }
+
+    int physicalWidth() const
+    {
+        return display.width();
+    }
+    int physicalHeight() const
+    {
+        return display.height();
+    }
 };
 
 class VirtualDisplay : public Adafruit_GFX
@@ -180,20 +189,28 @@ public:
         {
             memset(canvas, 0, canvasSize);
         }
-        displayBufferSize = w * h * pixelSize;
+        displayBufferSize = builder->physicalWidth() * builder->physicalHeight() * pixelSize;
         if ((displayBuffer = (uint16_t *)malloc(displayBufferSize)))
         {
             clearDisplayBuffer();
         }
-        _ready = true;
+        _ready = canvas && displayBuffer;
+        if (!_ready)
+        {
+            Serial.println(">>> Not enough memory for virtual screen");
+            Serial.println(">>> Enable PSRAM in your board configuration if supported");
+        }
         screenBuilder = builder;
     }
 
     bool begin()
     {
-        initPhysicalScreens();
-        Serial.printf("Virtual Screen Width=%d\n", _width);
-        Serial.printf("Virtual Screen Height=%d\n", _height);
+        if (_ready)
+        {
+            initPhysicalScreens();
+            Serial.printf("Virtual Screen Width=%d\n", _width);
+            Serial.printf("Virtual Screen Height=%d\n", _height);
+        }
         return _ready;
     }
 
