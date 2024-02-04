@@ -1,5 +1,5 @@
-#include "virtualScreen.h"
-#include "fonts/xtrchr30pt7b.h"
+#include <virtualScreen.h>
+#include "xtrchr30pt7b.h"
 
 VirtualDisplay *tft;
 ScreenBuilder screens;
