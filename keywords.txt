@@ -1,0 +1,16 @@
+[Keywords]
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+boolean
+uint16_t
+int
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+begin KEYWORD2
+output KEYWORD2
+highlightArea KEYWORD2
+color565 KEYWORD2
+readRect KEYWORD2
