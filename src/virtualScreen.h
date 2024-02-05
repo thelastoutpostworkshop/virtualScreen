@@ -7,7 +7,7 @@
 
 #define pixelSize 2 // Pixel Size in bytes
 
-TFT_eSPI display = TFT_eSPI();
+TFT_eSPI physicalDisplayTFT = TFT_eSPI();
 
 typedef struct
 {
@@ -46,8 +46,8 @@ public:
         ++totalRows;
 
         // Update virtual screen dimensions
-        virtualScreenWidth = display.width() * maxColumns;
-        virtualScreenHeight = display.height() * totalRows;
+        virtualScreenWidth = physicalDisplayTFT.width() * maxColumns;
+        virtualScreenHeight = physicalDisplayTFT.height() * totalRows;
 
         return *this;
     }
@@ -60,8 +60,8 @@ public:
     Screen *getScreen(int x, int y)
     {
         // Calculate which row and column the x, y coordinates fall into
-        int column = x / display.width();
-        int row = y / display.height();
+        int column = x / physicalDisplayTFT.width();
+        int row = y / physicalDisplayTFT.height();
 
         // Iterate through the screens to find the matching one
         for (auto &screen : screens)
@@ -112,16 +112,16 @@ private:
     uint16_t *getScreenImage(const Screen &screen)
     {
         // Calculate the starting position of the screen in the buffer
-        uint32_t position = (screen.row * display.height() * screenBuilder->width()) + (screen.column * display.width());
+        uint32_t position = (screen.row * physicalDisplayTFT.height() * screenBuilder->width()) + (screen.column * physicalDisplayTFT.width());
 
         uint16_t *startPos = canvas + position;
 
         // Copy the screen image from the buffer
-        for (int y = 0; y < display.height(); ++y)
+        for (int y = 0; y < physicalDisplayTFT.height(); ++y)
         {
-            for (int x = 0; x < display.width(); ++x)
+            for (int x = 0; x < physicalDisplayTFT.width(); ++x)
             {
-                displayBuffer[y * display.width() + x] = startPos[y * screenBuilder->width() + x];
+                displayBuffer[y * physicalDisplayTFT.width() + x] = startPos[y * screenBuilder->width() + x];
             }
         }
 
@@ -139,8 +139,8 @@ private:
     }
     void initPhysicalScreens()
     {
-        display.begin();
-        display.setSwapBytes(true);
+        physicalDisplayTFT.begin();
+        physicalDisplayTFT.setSwapBytes(true);
         const auto &screens = screenBuilder->getScreens();
 
         for (const auto &screen : screens)
@@ -151,7 +151,7 @@ private:
         for (const auto &screen : screens)
         {
             digitalWrite(screen.cs, LOW);
-            display.setRotation(screen.rotation);
+            physicalDisplayTFT.setRotation(screen.rotation);
             digitalWrite(screen.cs, HIGH);
         }
         clearDirtyFlag();
@@ -184,7 +184,7 @@ public:
         {
             memset(canvas, 0, canvasSize);
         }
-        displayBufferSize = display.width() * display.height() * pixelSize;
+        displayBufferSize = physicalDisplayTFT.width() * physicalDisplayTFT.height() * pixelSize;
         if ((displayBuffer = (uint16_t *)malloc(displayBufferSize)))
         {
             clearDisplayBuffer();
@@ -223,7 +223,7 @@ public:
             if (screen.dirty)
             {
                 digitalWrite(screen.cs, LOW);
-                display.pushImage(0, 0, display.width(), display.height(), screenImage);
+                physicalDisplayTFT.pushImage(0, 0, physicalDisplayTFT.width(), physicalDisplayTFT.height(), screenImage);
                 digitalWrite(screen.cs, HIGH);
             }
         }
