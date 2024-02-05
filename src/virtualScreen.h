@@ -85,15 +85,6 @@ public:
     {
         return virtualScreenHeight;
     }
-
-    int physicalWidth() const
-    {
-        return display.width();
-    }
-    int physicalHeight() const
-    {
-        return display.height();
-    }
 };
 
 class VirtualDisplay : public Adafruit_GFX
@@ -194,7 +185,7 @@ public:
         {
             memset(canvas, 0, canvasSize);
         }
-        displayBufferSize = builder->physicalWidth() * builder->physicalHeight() * pixelSize;
+        displayBufferSize = display.width() * display.height() * pixelSize;
         if ((displayBuffer = (uint16_t *)malloc(displayBufferSize)))
         {
             clearDisplayBuffer();
