@@ -114,8 +114,7 @@ private:
         // Calculate the starting position of the screen in the buffer
         uint32_t position = (screen.row * display.height() * screenBuilder->width()) + (screen.column * display.width());
 
-        uint16_t *buffer = canvas;
-        uint16_t *startPos = buffer + position;
+        uint16_t *startPos = canvas + position;
 
         // Copy the screen image from the buffer
         for (int y = 0; y < display.height(); ++y)
