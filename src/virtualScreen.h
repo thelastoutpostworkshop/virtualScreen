@@ -148,12 +148,6 @@ private:
             pinMode(screen.cs, OUTPUT);
             digitalWrite(screen.cs, HIGH);
         }
-        for (const auto &screen : screens)
-        {
-            digitalWrite(screen.cs, LOW);
-            physicalDisplayTFT.setRotation(screen.rotation);
-            digitalWrite(screen.cs, HIGH);
-        }
         clearDirtyFlag();
     }
 
@@ -223,6 +217,7 @@ public:
             if (screen.dirty)
             {
                 digitalWrite(screen.cs, LOW);
+                physicalDisplayTFT.setRotation(screen.rotation);
                 physicalDisplayTFT.pushImage(0, 0, physicalDisplayTFT.width(), physicalDisplayTFT.height(), screenImage);
                 digitalWrite(screen.cs, HIGH);
             }
