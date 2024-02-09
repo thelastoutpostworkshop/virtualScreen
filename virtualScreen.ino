@@ -30,13 +30,13 @@ void loop()
 }
 
 // Game settings
-const int paddleWidth = 30;
-const int paddleHeight = 5;
+const int paddleWidth = 40;
+const int paddleHeight = 15;
 const int ballRadius = 10;
-const int brickWidth = 30;
+const int brickWidth = 40;
 const int brickHeight = 20;
-const int numRows = 4;
-const int numCols = 8; // Adjust based on your display size
+const int numRows = 7;
+const int numCols = 10; // Adjust based on your display size
 
 // Game state
 int paddleX;
