@@ -67,9 +67,23 @@ void setupGame()
 }
 
 uint16_t calculateRowColor(int row, int totalRows) {
+    // Define the midpoint for the transition from red to orange, then orange to green
+    float midpoint = 0.5f;
     float progress = (float)row / (totalRows - 1); // Progress from 0.0 (top) to 1.0 (bottom)
-    uint8_t red = (1.0 - progress) * 31; // Start with red and decrease
-    uint8_t green = progress * 63; // Start with no green and increase
+
+    uint8_t red, green;
+
+    // Calculate the RGB components based on the row's position
+    if (progress <= midpoint) {
+        // Transition from red to orange in the first half
+        red = 31; // Maximum red value for the entire first half
+        green = (progress / midpoint) * 31; // Scale green up to 31 (to get orange) at the midpoint
+    } else {
+        // Transition from orange to green in the second half
+        red = (1.0f - (progress - midpoint) / midpoint) * 31; // Scale red down to 0 past the midpoint
+        green = 31 + ((progress - midpoint) / midpoint) * (63 - 31); // Continue scaling green from 31 to 63
+    }
+
     // Combine the components into a 16-bit color value
     return (red << 11) | (green << 5);
 }
@@ -79,7 +93,7 @@ void drawPaddle()
     // Clear the previous paddle position
     tft->fillRect(prevPaddleX, tft->height() - paddleHeight - 1, paddleWidth, paddleHeight, TFT_BLACK);
     // Draw the new paddle position
-    tft->fillRect(paddleX, tft->height() - paddleHeight - 1, paddleWidth, paddleHeight, TFT_WHITE);
+    tft->fillRect(paddleX, tft->height() - paddleHeight - 1, paddleWidth, paddleHeight, TFT_CYAN);
     prevPaddleX = paddleX; // Update the previous paddle position
 }
 
@@ -88,7 +102,7 @@ void drawBall()
     // Clear the previous ball position
     tft->fillCircle(prevBallX, prevBallY, ballRadius, TFT_BLACK);
     // Draw the new ball position
-    tft->fillCircle(ballX, ballY, ballRadius, TFT_RED);
+    tft->fillCircle(ballX, ballY, ballRadius, TFT_YELLOW);
     prevBallX = ballX; // Update the previous ball position
     prevBallY = ballY;
 }
