@@ -66,6 +66,14 @@ void setupGame()
     tft->output(); // Update the display after initial setup
 }
 
+uint16_t calculateRowColor(int row, int totalRows) {
+    float progress = (float)row / (totalRows - 1); // Progress from 0.0 (top) to 1.0 (bottom)
+    uint8_t red = (1.0 - progress) * 31; // Start with red and decrease
+    uint8_t green = progress * 63; // Start with no green and increase
+    // Combine the components into a 16-bit color value
+    return (red << 11) | (green << 5);
+}
+
 void drawPaddle()
 {
     // Clear the previous paddle position
@@ -85,23 +93,19 @@ void drawBall()
     prevBallY = ballY;
 }
 
-void drawBricks()
-{
-    for (int row = 0; row < numRows; ++row)
-    {
-        for (int col = 0; col < numCols; ++col)
-        {
+void drawBricks() {
+    for (int row = 0; row < numRows; ++row) {
+        // Calculate the color for the current row
+        uint16_t rowColor = calculateRowColor(row, numRows);
+        
+        for (int col = 0; col < numCols; ++col) {
             // Draw only if the brick status has changed
-            if (bricks[row][col] != prevBricks[row][col])
-            {
+            if (bricks[row][col] != prevBricks[row][col]) {
                 int x = col * (brickWidth + 5);
                 int y = row * (brickHeight + 5);
-                if (bricks[row][col])
-                {
-                    tft->fillRect(x, y, brickWidth, brickHeight, TFT_BLUE);
-                }
-                else
-                {
+                if (bricks[row][col]) {
+                    tft->fillRect(x, y, brickWidth, brickHeight, rowColor); // Use the row-specific color
+                } else {
                     tft->fillRect(x, y, brickWidth, brickHeight, TFT_BLACK); // Clear the brick if it was hit
                 }
                 prevBricks[row][col] = bricks[row][col]; // Update the tracked brick status
@@ -109,6 +113,7 @@ void drawBricks()
         }
     }
 }
+
 
 void updateGame()
 {
