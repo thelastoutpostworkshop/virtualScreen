@@ -1,6 +1,4 @@
 #include "src/virtualScreen.h"
-#include "fonts/BebasNeue_Regular13pt7b.h"
-#include "images/clock_1.h"
 
 VirtualDisplay *tft;
 ScreenBuilder screens;
@@ -10,217 +8,184 @@ void setup()
     Serial.begin(115200);
 
     // Adjust this setup according to your actual screen configuration
-    // screens.addRow({{16, 0}, {15, 0}, {6, 0}, {7, 0}});
-    screens.addRow({{16, 2}, {15, 2}});
     screens.addRow({{6, 0}, {7, 0}});
+    screens.addRow({{16, 2}, {15, 2}});
+
     tft = new VirtualDisplay(screens.width(), screens.height(), &screens);
     tft->begin();
 
-    gameOfLife();
+    tft->fillScreen(TFT_BLACK);
+    tft->output();
+    setupGame();
 }
 
 void loop()
 {
+    updateGame();
+    drawBricks();
+    drawPaddle();
+    drawBall();
+
+    tft->output();
 }
 
-int gridWidth;  // Width of the grid
-int gridHeight; // Height of the grid
-bool **currentGrid;
-bool **nextGrid;
-const int squareSize = 10;
-const int statsWidth = 240; // Width of the stats area on the left, adjust as needed
-int aliveCellsCount = 0;
-int changeRate = 0;
-const uint16_t statsBgColor = 0x3186;
-std::vector<int> populationHistory;
+// Game settings
+const int paddleWidth = 30;
+const int paddleHeight = 5;
+const int ballRadius = 10;
+const int brickWidth = 30;
+const int brickHeight = 20;
+const int numRows = 4;
+const int numCols = 8; // Adjust based on your display size
 
-void gameOfLife()
+// Game state
+int paddleX;
+int ballX, ballY;
+int ballVelocityX = 10, ballVelocityY = -10;
+bool bricks[numRows][numCols]; // True if the brick is still there
+
+int prevPaddleX;
+int prevBallX, prevBallY;
+bool prevBricks[numRows][numCols]; // To track changes in bricks
+
+// Initialize game state
+void setupGame()
 {
-    tft->fillScreen(TFT_BLACK);
-    setupGameOfLife(); // Initialize the game
-    for (int i = 0; i < 1000; i++)
-    {                       // Run for 1000 generations
-        updateGameOfLife(); // Update the grid
-        drawGameOfLife();   // Draw the grid
-        drawStats(i);       // Draw the stats with the current generation
-        drawPopulationGraph();
+    paddleX = prevPaddleX = (tft->width() - paddleWidth) / 2;
+    ballX = prevBallX = tft->width() / 2;
+    ballY = prevBallY = tft->height() - 30; // Start the ball above the paddle
+    memset(bricks, true, sizeof(bricks));   // Initialize all bricks as visible
 
-        delay(100); // Delay between generations
-    }
-    cleanupGameOfLife(); // Clean up the dynamically allocated memory
+    // Initially mark all previous bricks as not present to ensure they are drawn initially
+    memset(prevBricks, false, sizeof(prevBricks)); // Force drawing of all bricks initially
+
+    // Draw initial game state
+    drawBricks(); // Draw all bricks initially
+    drawPaddle();
+    drawBall();
+    tft->output(); // Update the display after initial setup
 }
 
-void setupGameOfLife()
+void drawPaddle()
 {
-    gridWidth = (tft->width() - statsWidth) / squareSize; // Adjusted for stats area
-    gridHeight = tft->height() / squareSize;
+    // Clear the previous paddle position
+    tft->fillRect(prevPaddleX, tft->height() - paddleHeight - 1, paddleWidth, paddleHeight, TFT_BLACK);
+    // Draw the new paddle position
+    tft->fillRect(paddleX, tft->height() - paddleHeight - 1, paddleWidth, paddleHeight, TFT_WHITE);
+    prevPaddleX = paddleX; // Update the previous paddle position
+}
 
-    // Allocate memory for the grids
-    currentGrid = new bool *[gridHeight];
-    nextGrid = new bool *[gridHeight];
-    for (int y = 0; y < gridHeight; y++)
-    {
-        currentGrid[y] = new bool[gridWidth];
-        nextGrid[y] = new bool[gridWidth];
-    }
+void drawBall()
+{
+    // Clear the previous ball position
+    tft->fillCircle(prevBallX, prevBallY, ballRadius, TFT_BLACK);
+    // Draw the new ball position
+    tft->fillCircle(ballX, ballY, ballRadius, TFT_RED);
+    prevBallX = ballX; // Update the previous ball position
+    prevBallY = ballY;
+}
 
-    // Randomly initialize the currentGrid
-    for (int y = 0; y < gridHeight; y++)
+void drawBricks()
+{
+    for (int row = 0; row < numRows; ++row)
     {
-        for (int x = 0; x < gridWidth; x++)
+        for (int col = 0; col < numCols; ++col)
         {
-            currentGrid[y][x] = esp_random() % 2; // Randomly alive or dead
+            // Draw only if the brick status has changed
+            if (bricks[row][col] != prevBricks[row][col])
+            {
+                int x = col * (brickWidth + 5);
+                int y = row * (brickHeight + 5);
+                if (bricks[row][col])
+                {
+                    tft->fillRect(x, y, brickWidth, brickHeight, TFT_BLUE);
+                }
+                else
+                {
+                    tft->fillRect(x, y, brickWidth, brickHeight, TFT_BLACK); // Clear the brick if it was hit
+                }
+                prevBricks[row][col] = bricks[row][col]; // Update the tracked brick status
+            }
         }
     }
 }
 
-void cleanupGameOfLife()
+void updateGame()
 {
-    for (int y = 0; y < gridHeight; y++)
-    {
-        delete[] currentGrid[y];
-        delete[] nextGrid[y];
+    // Move the paddle automatically by following the ball
+    paddleX = ballX - paddleWidth / 2;
+
+    // Update ball position
+    ballX += ballVelocityX;
+    ballY += ballVelocityY;
+
+    // Collision detection with the walls
+    if (ballX <= 0 || ballX >= tft->width())
+        ballVelocityX = -ballVelocityX;
+    if (ballY <= 0)
+        ballVelocityY = -ballVelocityY;
+
+    // Collision detection with the paddle
+    int paddleTopY = tft->height() - paddleHeight - 1;     // Y position of the top of the paddle
+    if (ballY + ballVelocityY > paddleTopY - ballRadius && // Check if moving past the paddle's top edge
+        ballY < paddleTopY + paddleHeight &&               // And is within paddle's height range
+        ballX + ballVelocityX > paddleX - ballRadius &&    // Check if within paddle's left edge
+        ballX + ballVelocityX < paddleX + paddleWidth + ballRadius)
+    {                                    // And within paddle's right edge
+        ballVelocityY = -ballVelocityY;  // Reverse Y direction
+        ballY = paddleTopY - ballRadius; // Adjust ball position to avoid sticking or multiple collisions
     }
-    delete[] currentGrid;
-    delete[] nextGrid;
-}
 
-void updateGameOfLife()
-{
-    int newAliveCellsCount = 0;
-    int newChangeRate = 0;
-
-    // Apply Game of Life rules to update the grid
-    for (int y = 0; y < gridHeight; y++)
+    // Collision detection with bricks
+    for (int row = 0; row < numRows; ++row)
     {
-        for (int x = 0; x < gridWidth; x++)
+        for (int col = 0; col < numCols; ++col)
         {
-            int aliveNeighbors = 0;
+            if (bricks[row][col])
+            { // If the brick is there
+                int brickX = col * (brickWidth + 5);
+                int brickY = row * (brickHeight + 5);
 
-            // Count alive neighbors
-            for (int i = -1; i <= 1; i++)
-            {
-                for (int j = -1; j <= 1; j++)
+                // Expanded collision detection area to account for the ball's radius
+                if (ballX + ballRadius > brickX && ballX - ballRadius < brickX + brickWidth &&
+                    ballY + ballRadius > brickY && ballY - ballRadius < brickY + brickHeight)
                 {
-                    if (i == 0 && j == 0)
+
+                    // Determine collision direction
+                    float middleX = brickX + brickWidth / 2;
+                    float middleY = brickY + brickHeight / 2;
+                    float deltaX = ballX - middleX;
+                    float deltaY = ballY - middleY;
+
+                    // Remove the brick
+                    bricks[row][col] = false;
+
+                    // Determine if collision is more horizontal or vertical
+                    // and reverse the appropriate velocity component
+                    if (fabs(deltaX) > fabs(deltaY))
                     {
-                        continue; // Skip the current cell
+                        if (ballX < middleX)
+                        { // Hit was from the left
+                            ballVelocityX = -abs(ballVelocityX);
+                        }
+                        else
+                        { // Hit was from the right
+                            ballVelocityX = abs(ballVelocityX);
+                        }
                     }
-                    int nx = x + j;
-                    int ny = y + i;
-                    if (nx >= 0 && nx < gridWidth && ny >= 0 && ny < gridHeight && currentGrid[ny][nx])
+                    else
                     {
-                        aliveNeighbors++;
+                        if (ballY < middleY)
+                        { // Hit was from above
+                            ballVelocityY = -abs(ballVelocityY);
+                        }
+                        else
+                        { // Hit was from below
+                            ballVelocityY = abs(ballVelocityY);
+                        }
                     }
                 }
             }
-
-            // Apply the rules of the Game of Life
-            bool newState = currentGrid[y][x];
-            if (currentGrid[y][x] && (aliveNeighbors < 2 || aliveNeighbors > 3))
-            {
-                newState = false; // Cell dies
-            }
-            else if (!currentGrid[y][x] && aliveNeighbors == 3)
-            {
-                newState = true; // Cell becomes alive
-            }
-
-            if (newState != currentGrid[y][x])
-            {
-                newChangeRate++; // Increment change rate if cell state changes
-            }
-
-            if (newState)
-            {
-                newAliveCellsCount++; // Count alive cells
-            }
-
-            nextGrid[y][x] = newState;
         }
     }
-
-    // Copy nextGrid to currentGrid for the next iteration and update stats
-    for (int y = 0; y < gridHeight; y++)
-    {
-        for (int x = 0; x < gridWidth; x++)
-        {
-            currentGrid[y][x] = nextGrid[y][x];
-        }
-    }
-
-    aliveCellsCount = newAliveCellsCount;
-    populationHistory.push_back(newAliveCellsCount);
-    changeRate = newChangeRate;
-}
-
-void drawGameOfLife()
-{
-    for (int y = 0; y < gridHeight; y++)
-    {
-        for (int x = 0; x < gridWidth; x++)
-        {
-            uint16_t color = currentGrid[y][x] ? 0x07e0 : TFT_BLACK;
-            tft->fillRect(x * squareSize + statsWidth, y * squareSize, squareSize, squareSize, color);
-        }
-    }
-    tft->output();
-}
-void drawPopulationGraph()
-{
-    int graphWidth = statsWidth - 10;              // Width of the graph, leaving some margin
-    int graphHeight = 50;                          // Height of the graph, adjust as needed
-    int graphX = 5;                                // X position of the graph
-    int graphY = tft->height() - graphHeight - 10; // Y position, placed at the bottom
-    int titleHeight = 15;                          // Height for the title area
-
-    // Clear the area for the graph and title
-    tft->fillRect(graphX, graphY - titleHeight, graphWidth, graphHeight + titleHeight, statsBgColor);
-
-    // Draw the title for the graph
-    tft->setTextColor(0x07fb);
-    tft->setCursor(8, graphY - titleHeight); // Set position for the title
-    tft->print("Population Over Time");
-
-    // Check if there is enough data to draw the graph
-    if (populationHistory.size() < 2)
-        return;
-
-    // Calculate the scaling factor for the graph
-    int maxPopulation = *std::max_element(populationHistory.begin(), populationHistory.end());
-    float scaleY = static_cast<float>(graphHeight) / maxPopulation;
-    float scaleX = static_cast<float>(graphWidth) / (populationHistory.size() - 1);
-
-    // Draw the graph line
-    for (size_t i = 0; i < populationHistory.size() - 1; ++i)
-    {
-        int x0 = graphX + i * scaleX;
-        int y0 = graphY + graphHeight - populationHistory[i] * scaleY;
-        int x1 = graphX + (i + 1) * scaleX;
-        int y1 = graphY + graphHeight - populationHistory[i + 1] * scaleY;
-        tft->drawLine(x0, y0, x1, y1, TFT_YELLOW);
-    }
-}
-
-void drawStats(int generation)
-{
-    // Clear the stats area
-    tft->fillRect(0, 0, statsWidth, tft->height(), statsBgColor);
-
-    tft->setTextColor(0x07fb);
-    tft->setFont(&BebasNeue_Regular13pt7b);
-    tft->setCursor(8, 30);
-    tft->print("Generation:");
-    tft->setTextColor(TFT_WHITE);
-    tft->print(generation);
-    tft->setTextColor(0x07fb);
-    tft->setCursor(8, 60);
-    tft->print("Alive: ");
-    tft->setTextColor(TFT_WHITE);
-    tft->print(aliveCellsCount);
-    tft->setCursor(8, 90);
-    tft->setTextColor(0x07fb);
-    tft->print("Change: ");
-    tft->setTextColor(TFT_WHITE);
-    tft->print(changeRate);
 }
