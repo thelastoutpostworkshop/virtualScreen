@@ -9,13 +9,13 @@ void setup()
     Serial.begin(115200);
 
     // Adjust this setup according to your actual screen configuration
-    screens.addRow({{16, 0}, {15, 0}});
+    screens.addRow({{6, 0}, {7, 0}});
 
     tft = new VirtualDisplay(screens.width(), screens.height(), &screens);
     tft->begin();
 
     tft->setFont(&xtrchr30pt7b);
-    tft->setTextColor(0x3fa7);
+    tft->setTextColor(TFT_CYAN);
     tft->setCursor(0,90);
     tft->print("Virtual Display");
     tft->output();
