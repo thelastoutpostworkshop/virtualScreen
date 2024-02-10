@@ -17,7 +17,7 @@ void setup()
     tft->setFont(&xtrchr30pt7b);
     tft->setTextColor(0x3fa7);
     tft->setCursor(0,90);
-    tft->print("Virtual Display with Adafruit GFX");
+    tft->print("Virtual Display");
     tft->output();
 }
 
