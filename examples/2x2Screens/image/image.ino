@@ -1,6 +1,6 @@
-#include "src/virtualScreen.h"
-#include "images/spaceship_480x480.h"
-#include "images/spacedock_480x480.h"
+#include "virtualScreen.h"
+#include "spaceship_480x480.h"
+#include "spacedock_480x480.h"
 
 VirtualDisplay *tft;
 ScreenBuilder screens;
