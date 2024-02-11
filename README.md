@@ -41,7 +41,7 @@ void setup()
     tft->output(); // Use this function to output the result on the screens
 }
 ```
-## Screen arrangement
+## Screen Layout
 >ℹ️ You can only use screen of the same resolution<br>
 
 Add rows of screens by using the ``` addRow() ``` function.<br>
@@ -64,7 +64,7 @@ Here are other graphics functions built in the VirtualScreen Library :
 
 | Graphics functions  | Description |
 |---------|-------------|
-|output()  | Output to the screens according to your screen arrangements |
+|output()  | Output to the screens according to your screen layout |
 |highlightArea(int16_t x, int16_t y, int16_t width, int16_t height, float intensity)  | Highlight a specified area of the canvas with adjustable intensity |
 |highlightArea(int16_t centerX, int16_t centerY, int16_t radius, float intensity)  | Highlight a circular area of the canvas with adjustable intensity |
 |color565(uint8_t r, uint8_t g, uint8_t b)  | Convert RGB Color to a 565 color code |
