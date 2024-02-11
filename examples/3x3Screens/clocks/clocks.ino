@@ -1,8 +1,8 @@
 #include "virtualScreen.h"
-#include "images/clock_1.h"
-#include "images/clock_2.h"
-#include "images/clock_3.h"
-#include "fonts/SecondWorldDemoRegular40pt7b.h"
+#include "clock_1.h"
+#include "clock_2.h"
+#include "clock_3.h"
+#include "SecondWorldDemoRegular40pt7b.h"
 
 VirtualDisplay *tft;
 ScreenBuilder screens;

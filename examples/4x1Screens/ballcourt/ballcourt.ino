@@ -1,5 +1,5 @@
 #include "virtualScreen.h"
-#include "images/ballcourt.h" 
+#include "ballcourt.h" 
 
 VirtualDisplay *tft;
 

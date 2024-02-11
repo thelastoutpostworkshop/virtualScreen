@@ -1,5 +1,5 @@
 #include "virtualScreen.h"
-#include "fonts/BebasNeue_Regular13pt7b.h"
+#include "BebasNeue_Regular13pt7b.h"
 
 VirtualDisplay *tft;
 ScreenBuilder screens;

@@ -1,7 +1,7 @@
 #include "virtualScreen.h"
-#include "fonts/Starjedi32pt7b.h"
-#include "fonts/raidercrusader48pt7b.h"
-#include "fonts/Star_Trek_Enterprise_Future80pt7b.h"
+#include "Starjedi32pt7b.h"
+#include "raidercrusader48pt7b.h"
+#include "Star_Trek_Enterprise_Future80pt7b.h"
 
 VirtualDisplay *tft;
 

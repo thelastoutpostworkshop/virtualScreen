@@ -1,6 +1,6 @@
 #include "virtualScreen.h"
-#include "fonts/Fun_Games20pt7b.h"
-#include "fonts/Fun_Games40pt7b.h"
+#include "Fun_Games20pt7b.h"
+#include "Fun_Games40pt7b.h"
 
 VirtualDisplay *tft;
 ScreenBuilder screens;
