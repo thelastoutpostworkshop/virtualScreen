@@ -59,6 +59,7 @@ Here are other graphics functions built in the VirtualScreen Library :
 | Graphics functions  | Description |
 |---------|-------------|
 |output()  | Output to the screens according to your screen arrangements |
+|highlightArea(int16_t x, int16_t y, int16_t width, int16_t height, float intensity)  | Highlight a specified area of the canvas with adjustable intensity |
 
 
 ## Performance
