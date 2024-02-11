@@ -1,3 +1,7 @@
+// Screen Layout : 4 screens on a single row
+// See the tutorial : 
+//
+
 #include "virtualScreen.h"
 #include "ballcourt.h" 
 
@@ -8,7 +12,7 @@ void setup()
     Serial.begin(115200);
 
     ScreenBuilder screens;
-    // Adjust this setup according to your actual screen configuration
+    // Adjust this setup according to your actual screen layout
     screens.addRow({{16, 0}, {15, 0}, {6, 0}, {7, 0}});
 
     tft = new VirtualDisplay(screens.width(), screens.height(), &screens);

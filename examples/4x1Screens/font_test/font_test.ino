@@ -1,3 +1,8 @@
+// Screen Layout : 4 screens on a single row
+// See the tutorial : 
+//
+
+
 #include "virtualScreen.h"
 #include "Starjedi32pt7b.h"
 #include "raidercrusader48pt7b.h"

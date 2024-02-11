@@ -1,3 +1,7 @@
+// Screen Layout : 2x2 Grid, two screens on each row
+// See the tutorial : 
+//
+
 #include "virtualScreen.h"
 
 VirtualDisplay *tft;
@@ -7,7 +11,7 @@ void setup()
 {
     Serial.begin(115200);
 
-    // Adjust this setup according to your actual screen configuration
+    // Adjust this setup according to your actual screen layout
     screens.addRow({{6, 0}, {7, 0}});
     screens.addRow({{16, 2}, {15, 2}});
 

@@ -1,4 +1,8 @@
 #include "virtualScreen.h"
+// Screen Layout : 3x2 Grid, three screens on each row
+// See the tutorial : 
+//
+
 #include "clock_1.h"
 #include "clock_2.h"
 #include "clock_3.h"
@@ -11,8 +15,8 @@ void setup()
 {
     Serial.begin(115200);
 
-    // Adjust this setup according to your actual screen configuration
-    // 6 screens 3 on each row
+    // Adjust this setup according to your actual screen layout
+    // 6 screens, 3 on each row
     screens.addRow({{7, 2}, {6, 2}, {15, 2}});
     screens.addRow({{16, 0}, {11, 0}, {9, 0}});
 
