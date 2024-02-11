@@ -66,6 +66,7 @@ Here are other graphics functions built in the VirtualScreen Library :
 
 
 ## Performance
+The library will redraw a screen only if its content has changed, so avoid redrawing the entire canvas if you can.
 
 ## Contributors
 Contributors are welcomed!  If you want to submit pull requests, [here is how you can do it](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project).
