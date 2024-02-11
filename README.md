@@ -12,7 +12,7 @@
 ## Installation
 ### Installation Arduino IDE (Version 2)
 
-- Install the **VirtualDisplay Library with the Arduino IDE Library Manager**, it will also install the TFT_eSPI library serving as driver for the displays.
+- Install the **VirtualDisplay Library with the Arduino IDE Library Manager**, it will also install the [TFT_eSPI library](https://github.com/Bodmer/TFT_eSPI) serving as driver for the displays.
 
 
 ## Usage
