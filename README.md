@@ -41,6 +41,9 @@ void setup()
     tft->output(); // Use this function to output the result on the screens
 }
 ```
+## Screen arrangement
+>ℹ️ You can only use screen of the same resolution<br>
+Add rows of screens by using the ```c addRow() ``` function
 
 ## Driver Setup for your Screens
 - You have to setup the driver in the [TFT_eSPI library](https://github.com/Bodmer/TFT_eSPI) configuration files for your display type, see my tutorial on how to do it.
