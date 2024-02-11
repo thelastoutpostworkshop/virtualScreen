@@ -44,8 +44,9 @@ void setup()
 ## Screen arrangement
 >ℹ️ You can only use screen of the same resolution<br>
 
-Add rows of screens by using the ``` addRow() ``` function.
-A screen is definded by ``` {int chip_select_pin, int rotation} ```
+Add rows of screens by using the ``` addRow() ``` function.<br>
+A screen is definded by ``` {int chip_select_pin, int rotation} ```<br>
+``` screens.addRow({{6, 0}, {7, 0}}); ``` adds a row of two screens of rotation 0, the first screen has a chip select on pin 7, and the other has the chip select on pin 7.
 
 ## Driver Setup for your Screens
 - You have to setup the driver in the [TFT_eSPI library](https://github.com/Bodmer/TFT_eSPI) configuration files for your display type, see my tutorial on how to do it.
