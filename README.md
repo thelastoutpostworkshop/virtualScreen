@@ -18,27 +18,27 @@
 ## Usage
 >ℹ️ There are many examples and display configuration included with the library `File > Examples > VirtualDisplay`<br>
 ```c
-#include <gpio_viewer.h> // Must me the first include in your project
-GPIOViewer gpio_viewer;
+#include <virtualScreen.h>
+
+VirtualDisplay *tft;
+ScreenBuilder screens;
 
 void setup()
 {
   Serial.begin(115200);
 
-  // Comment the next line, If your code aleady include connection to Wifi in mode WIFI_STA (WIFI_AP and WIFI_AP_STA are not supported)
-  gpio_viewer.connectToWifi("Your SSID network", "Your WiFi Password");
-  // gpio_viewer.setPort(5555);   // You can set the http port, if not set default port is 8080
+    // Adjust this setup according to your actual screen configuration
+    screens.addRow({{6, 0}, {7, 0}});
 
-  // Your own setup code start here
+    tft = new VirtualDisplay(screens.width(), screens.height(), &screens);
+    tft->begin();
 
-  // Must be at the end of your setup
-  // gpio_viewer.setSamplingInterval(25); // You can set the sampling interval in ms, if not set default is 100ms
-  gpio_viewer.begin();
+    tft->setTextColor(TFT_CYAN);
+    tft->setCursor(0,90);
+    tft->print("Virtual Display");
+    tft->output();
 }
 ```
->ℹ️ The default HTTP port is **8080** and default sampling interval is **100ms**<br>
->ℹ️ Wifi must be in mode WIFI_STA (WIFI_AP and WIFI_AP_STA are not supported) 
-
 
 ## Performance
 - Ensure you have a strong Wifi signal with a good transfer rate.  25ms sampling interval works great on Wifi 6 with 125 Mbps.
