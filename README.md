@@ -60,6 +60,9 @@ Here are other graphics functions built in the VirtualScreen Library :
 |---------|-------------|
 |output()  | Output to the screens according to your screen arrangements |
 |highlightArea(int16_t x, int16_t y, int16_t width, int16_t height, float intensity)  | Highlight a specified area of the canvas with adjustable intensity |
+|highlightArea(int16_t centerX, int16_t centerY, int16_t radius, float intensity)  | Highlight a circular area of the canvas with adjustable intensity |
+|color565(uint8_t r, uint8_t g, uint8_t b)  | Convert RGB Color to a 565 color code |
+|readRect(int16_t x, int16_t y, int16_t width, int16_t height, uint16_t *buffer)  | Read an image area into buffer (must be allocated before calling the function) |
 
 
 ## Performance
