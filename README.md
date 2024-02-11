@@ -33,16 +33,20 @@ void setup()
     tft = new VirtualDisplay(screens.width(), screens.height(), &screens);
     tft->begin();
 
+    // Use any Adafruit GFX Graphics functions
     tft->setTextColor(TFT_CYAN);
     tft->setCursor(0,90);
     tft->print("Virtual Display");
-    tft->output();
+
+    tft->output(); // Use this function to output the result on the screens
 }
 ```
 
-## Performance
-- Ensure you have a strong Wifi signal with a good transfer rate.  25ms sampling interval works great on Wifi 6 with 125 Mbps.
-- If you get "ERROR: Too many messages queued" on the Serial Monitor, this means the data is not read fast enough by the web application.  The data will still be displayed, but with some latency.  Reduce the sampling interval or try to improve your Wifi performance.
+## Driver Setup for your Screens
+- You have to setup the driver in the [TFT_eSPI library](https://github.com/Bodmer/TFT_eSPI) configuration files for your display type, see my tutorial on how to do it.
+
+## Display supported
+- Any 16 bit-color display supported by the [TFT_eSPI library](https://github.com/Bodmer/TFT_eSPI)
 
 ## Contributors
 Contributors are welcomed!  If you want to submit pull requests, [here is how you can do it](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project).
