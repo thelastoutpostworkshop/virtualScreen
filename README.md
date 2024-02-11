@@ -54,6 +54,12 @@ void setup()
 
 ## Graphics functions
 >ℹ️ You can use any graphics functions from the [Adafruit GFX library](https://learn.adafruit.com/adafruit-gfx-graphics-library/graphics-primitives)<br>
+Here are other graphics functions built in the VirtualScreen Library :
+| Graphics functions | Description | 
+|--------------------|---------------------------------------|
+ output() | output to the screens according to your screen arrangements
+
+## Performance
 
 ## Contributors
 Contributors are welcomed!  If you want to submit pull requests, [here is how you can do it](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project).
