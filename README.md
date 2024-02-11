@@ -1,6 +1,6 @@
-# VirtualScreen Arduino Library to span automatically Adafruit GFX Graphics functions
+# VirtualScreen: An Arduino Library for Auto-Spanning Adafruit GFX Graphics Across Multiple Displays
 
-**Transforms the way you troubleshoot your microcontroller projects**.<br>
+**Seamlessly Integrate Multiple Displays with Ease: A User-Friendly Approach to Expansive Graphics**.<br>
 <a href="https://www.buymeacoffee.com/thelastoutpostworkshop" target="_blank">
     <img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee">
 </a>
