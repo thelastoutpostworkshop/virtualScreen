@@ -48,5 +48,9 @@ void setup()
 ## Display supported
 - Any 16 bit-color display supported by the [TFT_eSPI library](https://github.com/Bodmer/TFT_eSPI)
 
+## Recommended ESP32
+- Spanning graphics across multiple displays requires a fair amount of memory, use an ESP32 with PSRAM.
+- The [ESP32-S3 N16R2](https://amzn.to/3TsziTh) is a good choice.
+
 ## Contributors
 Contributors are welcomed!  If you want to submit pull requests, [here is how you can do it](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project).
