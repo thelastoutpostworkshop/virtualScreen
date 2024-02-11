@@ -52,5 +52,8 @@ void setup()
 - Spanning graphics across multiple displays requires a fair amount of memory, use an **ESP32 with PSRAM**.
 - The [ESP32-S3 N16R2](https://amzn.to/3TsziTh) is a good choice.
 
+## Graphics functions
+>ℹ️ You can use any graphics functions from the [Adafruit GFX library](https://learn.adafruit.com/adafruit-gfx-graphics-library/graphics-primitives)<br>
+
 ## Contributors
 Contributors are welcomed!  If you want to submit pull requests, [here is how you can do it](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project).
