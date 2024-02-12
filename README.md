@@ -7,7 +7,7 @@
 
 
 ## Youtube Tutorial
-[<img src="https://github.com/thelastoutpostworkshop/images/blob/main/GPIO%20Viewer.png" width="300">](https://youtu.be/UxkOosaNohU)
+
 
 ## Installation
 ### Installation Arduino IDE (Version 2)
