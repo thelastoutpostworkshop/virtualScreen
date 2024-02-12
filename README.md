@@ -1,4 +1,4 @@
-# VirtualScreen: An Arduino Library for Auto-Spanning Adafruit GFX Graphics Across Multiple Displays
+# VirtualScreen: An Arduino Library for Auto-Spanning Adafruit GFX Graphics Across Multiple Displays / Screens
 
 **Seamlessly Integrate Multiple Displays with Ease: A User-Friendly Approach to Expansive Graphics**.<br>
 <a href="https://www.buymeacoffee.com/thelastoutpostworkshop" target="_blank">
@@ -16,7 +16,7 @@
 
 
 ## Usage
->ℹ️ There are many examples and display configuration included with the library `File > Examples > VirtualDisplay`<br>
+>ℹ️ There are many examples and display layout included with the library `File > Examples > VirtualDisplay`<br>
 ```c
 #include <virtualScreen.h>
 
@@ -41,14 +41,14 @@ void setup()
     tft->output(); // Use this function to output the result on the screens
 }
 ```
-## Screen Layout
->ℹ️ You can only use screen of the same resolution<br>
+## Display Layout
+>ℹ️ You can only use display of the same resolution<br>
 
-Add rows of screens by using the ``` addRow() ``` function.<br>
+Add rows of screens (display) by using the ``` addRow() ``` function.<br>
 A screen is definded by ``` {int chip_select_pin, int rotation} ```<br>
 ```screens.addRow({{6, 0}, {7, 0}}); ``` adds a row of two screens of rotation 0, the first screen has a chip select on pin 7, and the other has the chip select on pin 7.
 
-## Driver Setup for your Screens
+## Driver Setup for your Display
 - You have to setup the driver in the [TFT_eSPI library](https://github.com/Bodmer/TFT_eSPI) configuration files for your display type, see my tutorial on how to do it.
 
 ## Display supported
@@ -72,7 +72,7 @@ Here are other graphics functions built in the VirtualScreen Library :
 
 
 ## Performance
-The library will redraw a screen only if its content has changed, so avoid redrawing the entire canvas if you can.
+The library will redraw a display only if its content has changed, so avoid redrawing the entire canvas if you can.
 
 ## Contributors
 Contributors are welcomed!  If you want to submit pull requests, [here is how you can do it](https://docs.github.com/en/get-started/exploring-projects-on-github/contributing-to-a-project).
